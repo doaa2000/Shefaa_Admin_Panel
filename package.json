@@ -1,0 +1,30 @@
+{
+  "name": "shefaa-admin-panel",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shefaa Healthcare Clinic Admin Panel — enterprise Vue 3 application",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit",
+    "lint": "eslint . --ext .ts,.vue --max-warnings 0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "pinia": "^2.2.2",
+    "vue": "^3.5.6",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.20",
+    "@vitejs/plugin-vue": "^5.1.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8",
+    "vue-tsc": "^2.1.6"
+  }
+}
