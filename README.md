@@ -132,17 +132,51 @@ npm run dev        # http://localhost:5173
 
 ## Supabase backend
 
-1. Create a Supabase project.
-2. Run [`supabase/schema.sql`](supabase/schema.sql) in the SQL editor. It creates
-   all tables (`admins`, `roles`, `permissions`, `profiles`, `doctors`,
-   `patients`, `clinics`, `cities`, `governorates`, `specializations`,
-   `doctor_specializations`, `appointments`, `consultations`, `prescriptions`,
-   `payments`, `subscriptions`, `notifications`, `audit_logs`) with
-   relationships, constraints, indexes, RLS policies, a `dashboard_stats()` RPC,
-   and realtime publication.
-3. Create an admin: add a user in Supabase Auth, then insert a matching row into
-   `admins (id, name_en, name_ar, role)` using that user's UUID.
-4. Set `VITE_BACKEND_PROVIDER=supabase` and the two keys in `.env`.
+The admin panel shares **one Supabase project / database** with the patient app.
+Use the **same** `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as the app.
+
+### A) Existing app database (recommended — what we use)
+
+The Supabase repositories and mappers are wired to the app's real tables
+(`specialties`, `Doctors`, `Governorates`, `Cities`, `Clinics`, `bookings`,
+`profiles`, `payments`, …) — joins are resolved client-side, so no FK metadata
+is required.
+
+1. Run [`supabase/migrations/001_admin_integration.sql`](supabase/migrations/001_admin_integration.sql)
+   once in the SQL editor. It is **additive and safe** (no drops/renames):
+   - adds enrichment columns to `specialties` (`name_ar`, `description`, `color`, `base_fee`)
+   - adds a `status` column to `Doctors` and `profiles` (activate / block)
+   - enables **Realtime** on `specialties`, `Doctors`, `bookings`
+   - adds admin RLS policies for authenticated users
+   - creates the `admin_dashboard_stats()` RPC (real KPI numbers)
+2. Create an admin login: add a user in **Supabase Auth** (their `profiles.name`
+   becomes the displayed admin name). Any authenticated user can sign in to the
+   panel; tighten with your own RLS/role check when ready.
+3. `.env`: `VITE_BACKEND_PROVIDER=supabase` + the app's URL and anon key.
+
+#### Add specialization in admin → appears in the app
+
+Admin save → `insert into specialties (name, icon, …)` → the app reads the same
+`specialties` table. For **instant** updates (no refresh), subscribe in the app:
+
+```ts
+supabase
+  .channel('specialties')
+  .on('postgres_changes',
+      { event: '*', schema: 'public', table: 'specialties' },
+      () => { /* refetch / update the specialties list in the app */ })
+  .subscribe();
+```
+
+> Note: the admin writes the icon **key** (e.g. `tooth`) into `specialties.icon`.
+> If the app expects an image URL there, either keep using key-based icons in the
+> app or adjust the admin icon field to store a URL.
+
+### B) Greenfield database (reference)
+
+[`supabase/schema.sql`](supabase/schema.sql) is a complete, normalized schema
+(bilingual, UUID keys, full RBAC + audit tables) for a fresh project that doesn't
+already have the app's tables. It is a reference; the live integration uses path A.
 
 ---
 

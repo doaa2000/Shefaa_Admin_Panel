@@ -3,49 +3,46 @@ import type { Specialization, SpecializationInput } from '@/domain/entities/Spec
 import type { EntityId } from '@/shared/types';
 import { getSupabaseClient } from '@/infrastructure/supabase/client';
 import { toSpecialization } from '@/infrastructure/mappers/specialization.mapper';
-import type { SpecializationRow } from '@/infrastructure/supabase/types';
+import type { SpecialtyRow } from '@/infrastructure/supabase/types';
 
-const SELECT = 'id, name_en, name_ar, desc_en, desc_ar, icon, color, base_fee';
+const TABLE = 'specialties';
+const SELECT = 'id, name, icon, name_ar, description, color, base_fee';
 
 export class SupabaseSpecializationsRepository implements ISpecializationsRepository {
   private db = getSupabaseClient();
 
   async list(): Promise<Specialization[]> {
-    const { data, error } = await this.db.from('specializations').select(SELECT).order('name_en');
+    const { data, error } = await this.db.from(TABLE).select(SELECT).order('name');
     if (error) throw error;
-    return ((data ?? []) as SpecializationRow[]).map(toSpecialization);
+    return ((data ?? []) as SpecialtyRow[]).map(toSpecialization);
   }
 
   async getById(id: EntityId): Promise<Specialization | null> {
-    const { data, error } = await this.db
-      .from('specializations')
-      .select(SELECT)
-      .eq('id', id)
-      .maybeSingle();
+    const { data, error } = await this.db.from(TABLE).select(SELECT).eq('id', Number(id)).maybeSingle();
     if (error) throw error;
-    return data ? toSpecialization(data as SpecializationRow) : null;
+    return data ? toSpecialization(data as SpecialtyRow) : null;
   }
 
   async save(input: SpecializationInput): Promise<Specialization> {
+    // The app reads `name` + `icon`; the rest are admin-only enrichment columns.
     const payload = {
-      name_en: input.nameEn,
+      name: input.nameEn,
       name_ar: input.nameAr || input.nameEn,
-      desc_en: input.descEn,
-      desc_ar: input.descAr || input.descEn,
+      description: input.descEn || input.descAr || null,
       icon: input.icon,
       color: input.color,
       base_fee: input.baseFee,
     };
     const query = input.id
-      ? this.db.from('specializations').update(payload).eq('id', input.id)
-      : this.db.from('specializations').insert(payload);
+      ? this.db.from(TABLE).update(payload).eq('id', Number(input.id))
+      : this.db.from(TABLE).insert(payload);
     const { data, error } = await query.select(SELECT).single();
     if (error) throw error;
-    return toSpecialization(data as SpecializationRow);
+    return toSpecialization(data as SpecialtyRow);
   }
 
   async delete(id: EntityId): Promise<void> {
-    const { error } = await this.db.from('specializations').delete().eq('id', id);
+    const { error } = await this.db.from(TABLE).delete().eq('id', Number(id));
     if (error) throw error;
   }
 }

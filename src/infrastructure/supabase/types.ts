@@ -1,80 +1,71 @@
-/** Raw row shapes returned by Supabase (snake_case), kept out of the domain. */
+/**
+ * Raw row shapes for the EXISTING app database (snake_case, real table names).
+ * Kept out of the domain. Joins are resolved in JS inside the repositories
+ * (rather than via PostgREST embedding) so they don't depend on FK metadata.
+ */
 
-export interface SpecializationRow {
-  id: string;
-  name_en: string;
-  name_ar: string;
-  desc_en: string | null;
-  desc_ar: string | null;
+export interface SpecialtyRow {
+  id: number;
+  name: string;
   icon: string | null;
+  name_ar: string | null;
+  description: string | null;
   color: string | null;
-  base_fee: number;
-}
-
-export interface ClinicRow {
-  id: string;
-  name_en: string;
-  name_ar: string;
-  city: {
-    id: string;
-    name_en: string;
-    name_ar: string;
-    governorate: { id: string; name_en: string; name_ar: string } | null;
-  } | null;
+  base_fee: number | null;
 }
 
 export interface DoctorRow {
-  id: string;
-  name_en: string;
-  name_ar: string;
-  email: string;
-  fee: number;
-  status: string;
-  color: string | null;
-  specialization_id: string;
-  clinic_id: string;
-  specialization: { name_en: string; name_ar: string } | null;
-  clinic: ClinicRow | null;
-}
-
-export interface PatientRow {
-  id: string;
-  name_en: string;
-  name_ar: string;
-  email: string;
-  phone: string;
-  total_bookings: number;
-  status: string;
-  joined: string;
-  last_visit: string | null;
-  color: string | null;
+  id: number;
+  name: string;
+  specialty_id: number | null;
+  specialization: string | null;
+  clinic_id: number | null;
+  consultation_fee: number | null;
+  status: string | null;
+  email: string | null;
+  image: string | null;
+  title: string | null;
 }
 
 export interface GovernorateRow {
-  id: string;
-  name_en: string;
-  name_ar: string;
-  cities: CityRow[];
+  id: number;
+  name: string;
+  country_id: number | null;
 }
 
 export interface CityRow {
-  id: string;
-  name_en: string;
-  name_ar: string;
-  clinics: { id: string; name_en: string; name_ar: string }[];
+  id: number;
+  name: string;
+  governorate_id: number | null;
 }
 
-export interface AppointmentRow {
+export interface ClinicRow {
+  id: number;
+  name: string;
+  address: string | null;
+  city_id: number | null;
+}
+
+export interface ProfileRow {
   id: string;
-  datetime: string;
-  price: number;
-  status: string;
-  patient: { name_en: string; name_ar: string; color: string | null } | null;
-  doctor: {
-    name_en: string;
-    name_ar: string;
-    color: string | null;
-    specialization: { name_en: string; name_ar: string } | null;
-    clinic: ClinicRow | null;
-  } | null;
+  name: string | null;
+  phone: string | null;
+  gender: string | null;
+  status: string | null;
+}
+
+export interface BookingRow {
+  id: number;
+  patient_id: string | null;
+  doctor_id: number | null;
+  payment_id: number | null;
+  booked_date: string | null;
+  start_time: string | null;
+  status: string | null;
+}
+
+export interface PaymentRow {
+  id: number;
+  amount: number | null;
+  status: string | null;
 }

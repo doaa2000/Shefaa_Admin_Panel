@@ -1,15 +1,16 @@
 import type { Specialization } from '@/domain/entities/Specialization';
-import type { SpecializationRow } from '@/infrastructure/supabase/types';
+import type { SpecialtyRow } from '@/infrastructure/supabase/types';
 
-export function toSpecialization(row: SpecializationRow): Specialization {
+/** specialties (id, name, icon, name_ar, description, color, base_fee) → domain */
+export function toSpecialization(row: SpecialtyRow): Specialization {
   return {
-    id: row.id,
-    nameEn: row.name_en,
-    nameAr: row.name_ar,
-    descEn: row.desc_en ?? '',
-    descAr: row.desc_ar ?? '',
+    id: String(row.id),
+    nameEn: row.name,
+    nameAr: row.name_ar ?? row.name,
+    descEn: row.description ?? '',
+    descAr: row.description ?? '',
     icon: row.icon ?? 'stethoscope',
     color: row.color ?? '#67B2D8',
-    baseFee: row.base_fee,
+    baseFee: row.base_fee ?? 0,
   };
 }

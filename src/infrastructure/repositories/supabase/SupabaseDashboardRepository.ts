@@ -11,7 +11,8 @@ export class SupabaseDashboardRepository implements IDashboardRepository {
   private db = getSupabaseClient();
 
   async getStats(): Promise<DashboardStats> {
-    const { data, error } = await this.db.rpc('dashboard_stats');
+    // Computed against the app's real tables (see migration admin_dashboard_stats).
+    const { data, error } = await this.db.rpc('admin_dashboard_stats');
     if (error || !data) return structuredClone(SEED_DASHBOARD);
     return data as DashboardStats;
   }

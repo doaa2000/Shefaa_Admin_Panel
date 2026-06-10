@@ -24,19 +24,24 @@ export class SupabaseAuthRepository implements IAuthRepository {
     return this.toAdmin(data.user.id, data.user.email ?? '');
   }
 
-  /** Loads the admin profile row joined to the auth user. */
+  /**
+   * Builds the admin from the auth user, enriching with the `profiles` row when
+   * present. Works even if no dedicated admins table exists in the app DB.
+   */
   private async toAdmin(id: string, email: string): Promise<Admin> {
-    const { data } = await this.db
-      .from('admins')
-      .select('name_en, name_ar, role')
-      .eq('id', id)
-      .maybeSingle();
+    let name = '';
+    try {
+      const { data } = await this.db.from('profiles').select('name').eq('id', id).maybeSingle();
+      name = data?.name ?? '';
+    } catch {
+      /* profiles row optional */
+    }
     return {
       id,
       email,
-      nameEn: data?.name_en ?? 'Administrator',
-      nameAr: data?.name_ar ?? 'مدير',
-      role: data?.role ?? 'System Administrator',
+      nameEn: name || 'Administrator',
+      nameAr: name || 'مدير',
+      role: 'System Administrator',
     };
   }
 }

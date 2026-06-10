@@ -4,65 +4,67 @@ import type { EntityId } from '@/shared/types';
 import { DoctorStatus } from '@/domain/enums';
 import { getSupabaseClient } from '@/infrastructure/supabase/client';
 import { toDoctor } from '@/infrastructure/mappers/doctor.mapper';
+import { loadRefMaps } from './loadRefs';
 import type { DoctorRow } from '@/infrastructure/supabase/types';
 
-const SELECT = `
-  id, name_en, name_ar, email, fee, status, color, specialization_id, clinic_id,
-  specialization:specializations ( name_en, name_ar ),
-  clinic:clinics ( id, name_en, name_ar,
-    city:cities ( id, name_en, name_ar,
-      governorate:governorates ( id, name_en, name_ar ) ) )
-`;
+const TABLE = 'Doctors';
+const SELECT = 'id, name, specialty_id, specialization, clinic_id, consultation_fee, status, email, image, title';
 
 export class SupabaseDoctorsRepository implements IDoctorsRepository {
   private db = getSupabaseClient();
 
   async list(): Promise<Doctor[]> {
-    const { data, error } = await this.db
-      .from('doctors')
-      .select(SELECT)
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    return ((data ?? []) as unknown as DoctorRow[]).map(toDoctor);
+    const [refs, res] = await Promise.all([
+      loadRefMaps(this.db),
+      this.db.from(TABLE).select(SELECT).order('id', { ascending: false }),
+    ]);
+    if (res.error) throw res.error;
+    return ((res.data ?? []) as DoctorRow[]).map((row, i) => toDoctor(row, refs, i));
   }
 
   async getById(id: EntityId): Promise<Doctor | null> {
-    const { data, error } = await this.db.from('doctors').select(SELECT).eq('id', id).maybeSingle();
-    if (error) throw error;
-    return data ? toDoctor(data as unknown as DoctorRow) : null;
+    const [refs, res] = await Promise.all([
+      loadRefMaps(this.db),
+      this.db.from(TABLE).select(SELECT).eq('id', Number(id)).maybeSingle(),
+    ]);
+    if (res.error) throw res.error;
+    return res.data ? toDoctor(res.data as DoctorRow, refs) : null;
   }
 
   async save(input: DoctorInput): Promise<Doctor> {
+    // Single-language `name` in the app DB → use the English value.
     const payload = {
-      name_en: input.nameEn.startsWith('Dr.') ? input.nameEn : 'Dr. ' + input.nameEn,
-      name_ar: input.nameAr,
-      email: input.email,
-      specialization_id: input.specializationId,
-      clinic_id: input.clinicId,
-      fee: input.fee,
+      name: input.nameEn,
+      specialty_id: input.specializationId ? Number(input.specializationId) : null,
+      clinic_id: input.clinicId ? Number(input.clinicId) : null,
+      consultation_fee: input.fee,
       status: input.status,
+      email: input.email || null,
     };
     const query = input.id
-      ? this.db.from('doctors').update(payload).eq('id', input.id)
-      : this.db.from('doctors').insert(payload);
-    const { data, error } = await query.select(SELECT).single();
-    if (error) throw error;
-    return toDoctor(data as unknown as DoctorRow);
+      ? this.db.from(TABLE).update(payload).eq('id', Number(input.id))
+      : this.db.from(TABLE).insert(payload);
+    const [refs, res] = await Promise.all([loadRefMaps(this.db), query.select(SELECT).single()]);
+    if (res.error) throw res.error;
+    return toDoctor(res.data as DoctorRow, refs);
   }
 
   async delete(id: EntityId): Promise<void> {
-    const { error } = await this.db.from('doctors').delete().eq('id', id);
+    const { error } = await this.db.from(TABLE).delete().eq('id', Number(id));
     if (error) throw error;
   }
 
   async setStatus(id: EntityId, active: boolean): Promise<Doctor> {
-    const { data, error } = await this.db
-      .from('doctors')
-      .update({ status: active ? DoctorStatus.Active : DoctorStatus.Inactive })
-      .eq('id', id)
-      .select(SELECT)
-      .single();
-    if (error) throw error;
-    return toDoctor(data as unknown as DoctorRow);
+    const [refs, res] = await Promise.all([
+      loadRefMaps(this.db),
+      this.db
+        .from(TABLE)
+        .update({ status: active ? DoctorStatus.Active : DoctorStatus.Inactive })
+        .eq('id', Number(id))
+        .select(SELECT)
+        .single(),
+    ]);
+    if (res.error) throw res.error;
+    return toDoctor(res.data as DoctorRow, refs);
   }
 }
