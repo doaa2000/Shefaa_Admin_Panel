@@ -36,10 +36,14 @@ const statusOptions = computed<SelectOption[]>(() => [
 async function onConfirm(): Promise<void> {
   if (!confirmTarget.value) return;
   const wasBlocked = confirmTarget.value.status === PatientStatus.Blocked;
-  await patients.toggleBlocked(confirmTarget.value);
-  toast(wasBlocked ? t.value('userUnblocked') : t.value('userBlocked'));
-  confirmTarget.value = null;
-  profile.value = null;
+  try {
+    await patients.toggleBlocked(confirmTarget.value);
+    toast(wasBlocked ? t.value('userUnblocked') : t.value('userBlocked'));
+    confirmTarget.value = null;
+    profile.value = null;
+  } catch (e) {
+    toast((e as Error).message || 'Error', 'danger');
+  }
 }
 </script>
 

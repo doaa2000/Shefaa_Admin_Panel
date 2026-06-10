@@ -36,16 +36,24 @@ function openEdit(s: Specialization): void {
 }
 
 async function onSaved(input: SpecializationInput, isNew: boolean): Promise<void> {
-  await specs.save(input);
-  showForm.value = false;
-  toast(isNew ? t.value('specializationAdded') : t.value('specializationUpdated'));
+  try {
+    await specs.save(input);
+    showForm.value = false;
+    toast(isNew ? t.value('specializationAdded') : t.value('specializationUpdated'));
+  } catch (e) {
+    toast((e as Error).message || 'Error', 'danger');
+  }
 }
 
 async function onConfirmDelete(): Promise<void> {
   if (!confirmTarget.value) return;
-  await specs.remove(confirmTarget.value.id);
-  confirmTarget.value = null;
-  toast(t.value('specializationDeleted'));
+  try {
+    await specs.remove(confirmTarget.value.id);
+    confirmTarget.value = null;
+    toast(t.value('specializationDeleted'));
+  } catch (e) {
+    toast((e as Error).message || 'Error', 'danger');
+  }
 }
 </script>
 

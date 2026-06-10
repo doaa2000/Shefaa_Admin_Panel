@@ -38,18 +38,26 @@ const confirmState = ref<ConfirmState | null>(null);
 async function onAdd(nameEn: string, nameAr: string): Promise<void> {
   if (!adding.value) return;
   const { level, chain } = adding.value;
-  await loc.addNode(level, nameEn, nameAr, chain);
-  if (level === LocationLevel.City && chain.gov) loc.ensureOpen(chain.gov);
-  if (level === LocationLevel.Clinic && chain.gov && chain.city) loc.ensureOpen(chain.gov, chain.city);
-  adding.value = null;
-  toast(t.value('locAdded'));
+  try {
+    await loc.addNode(level, nameEn, nameAr, chain);
+    if (level === LocationLevel.City && chain.gov) loc.ensureOpen(chain.gov);
+    if (level === LocationLevel.Clinic && chain.gov && chain.city) loc.ensureOpen(chain.gov, chain.city);
+    adding.value = null;
+    toast(t.value('locAdded'));
+  } catch (e) {
+    toast((e as Error).message || 'Error', 'danger');
+  }
 }
 
 async function onDelete(): Promise<void> {
   if (!confirmState.value) return;
-  await loc.deleteNode(confirmState.value.level, confirmState.value.ids);
-  confirmState.value = null;
-  toast(t.value('locDeleted'));
+  try {
+    await loc.deleteNode(confirmState.value.level, confirmState.value.ids);
+    confirmState.value = null;
+    toast(t.value('locDeleted'));
+  } catch (e) {
+    toast((e as Error).message || 'Error', 'danger');
+  }
 }
 </script>
 

@@ -49,21 +49,33 @@ function openEdit(d: Doctor): void {
 }
 
 async function onSaved(input: DoctorInput, isNew: boolean): Promise<void> {
-  await doctors.save(input);
-  showForm.value = false;
-  toast(isNew ? t.value('doctorAdded') : t.value('doctorUpdated'));
+  try {
+    await doctors.save(input);
+    showForm.value = false;
+    toast(isNew ? t.value('doctorAdded') : t.value('doctorUpdated'));
+  } catch (e) {
+    toast((e as Error).message || 'Error', 'danger');
+  }
 }
 
 async function onToggle(d: Doctor): Promise<void> {
-  await doctors.toggleStatus(d);
-  toast(d.status === DoctorStatus.Active ? t.value('deactivate') : t.value('activate'));
+  try {
+    await doctors.toggleStatus(d);
+    toast(d.status === DoctorStatus.Active ? t.value('deactivate') : t.value('activate'));
+  } catch (e) {
+    toast((e as Error).message || 'Error', 'danger');
+  }
 }
 
 async function onConfirmDelete(): Promise<void> {
   if (!confirmTarget.value) return;
-  await doctors.remove(confirmTarget.value.id);
-  confirmTarget.value = null;
-  toast(t.value('doctorDeleted'));
+  try {
+    await doctors.remove(confirmTarget.value.id);
+    confirmTarget.value = null;
+    toast(t.value('doctorDeleted'));
+  } catch (e) {
+    toast((e as Error).message || 'Error', 'danger');
+  }
 }
 </script>
 
