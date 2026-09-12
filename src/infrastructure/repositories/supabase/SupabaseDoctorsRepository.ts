@@ -1,5 +1,6 @@
 import type { IDoctorsRepository } from '@/domain/repositories/IDoctorsRepository';
 import type { Doctor, DoctorInput } from '@/domain/entities/Doctor';
+import { assertDeleted, describeWriteError } from './writeGuards';
 import type { EntityId } from '@/shared/types';
 import { DoctorStatus } from '@/domain/enums';
 import { getSupabaseClient } from '@/infrastructure/supabase/client';
@@ -50,8 +51,15 @@ export class SupabaseDoctorsRepository implements IDoctorsRepository {
   }
 
   async delete(id: EntityId): Promise<void> {
-    const { error } = await this.db.from(TABLE).delete().eq('id', Number(id));
-    if (error) throw error;
+    // Counted, not assumed: row level security reports a refused delete as a
+    // clean delete of nothing. See writeGuards.
+    const { data, error } = await this.db
+      .from(TABLE)
+      .delete()
+      .eq('id', Number(id))
+      .select('id');
+    if (error) throw describeWriteError(error);
+    assertDeleted(data, 'The doctor');
   }
 
   async setStatus(id: EntityId, active: boolean): Promise<Doctor> {
