@@ -30,7 +30,6 @@ export interface DoctorRow {
 export interface GovernorateRow {
   id: number;
   name: string;
-  country_id: number | null;
 }
 
 export interface CityRow {
