@@ -1,3 +1,25 @@
+-- ############################################################################
+-- ##  DO NOT RUN THIS FILE AGAINST THE SHEFAA PROJECT.                      ##
+-- ##                                                                        ##
+-- ##  This is a GREENFIELD schema written before the admin panel was wired  ##
+-- ##  to the real database. It does NOT describe the live Shefaa schema:    ##
+-- ##                                                                        ##
+-- ##      this file          live database                                  ##
+-- ##      ----------------   ----------------                              ##
+-- ##      appointments       bookings                                       ##
+-- ##      patients           profiles                                       ##
+-- ##      doctors            "Doctors"                                      ##
+-- ##      specializations    specialties                                    ##
+-- ##      uuid keys          bigint keys                                    ##
+-- ##                                                                        ##
+-- ##  Running it creates a second, parallel set of tables that nothing      ##
+-- ##  reads, while the app keeps using the originals.                       ##
+-- ##                                                                        ##
+-- ##  The live schema lives in Shefaa/supabase/migrations/0000_base_schema.sql
+-- ##  and is adapted for the admin panel by the migrations/ folder here.    ##
+-- ##  Kept only as reference for a possible future rebuild.                 ##
+-- ############################################################################
+
 -- ============================================================
 -- Shefaa Healthcare Admin — PostgreSQL / Supabase schema
 -- Relationships · constraints · indexes · RLS · realtime

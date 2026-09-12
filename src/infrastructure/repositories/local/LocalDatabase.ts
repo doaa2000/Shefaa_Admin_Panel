@@ -8,6 +8,7 @@ import type { Specialization } from '@/domain/entities/Specialization';
 import type { Patient } from '@/domain/entities/Patient';
 import type { Governorate } from '@/domain/entities/Location';
 import type { Appointment } from '@/domain/entities/Appointment';
+import type { Banner } from '@/domain/entities/Banner';
 import {
   SEED_DOCTORS,
   SEED_SPECIALIZATIONS,
@@ -22,6 +23,7 @@ interface DbShape {
   patients: Patient[];
   locations: Governorate[];
   appointments: Appointment[];
+  banners: Banner[];
 }
 
 const STORE_KEY = 'shefaa.admin.v3';
@@ -33,6 +35,8 @@ function seed(): DbShape {
     patients: structuredClone(SEED_PATIENTS),
     locations: structuredClone(SEED_LOCATIONS),
     appointments: structuredClone(SEED_APPOINTMENTS),
+    // Banners are pictures the admin uploads; there is nothing sensible to seed.
+    banners: [],
   };
 }
 
@@ -46,7 +50,10 @@ class LocalDatabase {
   private load(): DbShape {
     try {
       const raw = localStorage.getItem(STORE_KEY);
-      if (raw) return JSON.parse(raw) as DbShape;
+      // A cache written before a collection existed is missing that key, and a
+      // missing collection reads back as undefined and breaks every caller.
+      // Filling the gaps from the seed keeps an old cache usable.
+      if (raw) return { ...seed(), ...(JSON.parse(raw) as Partial<DbShape>) } as DbShape;
     } catch {
       /* ignore malformed cache */
     }

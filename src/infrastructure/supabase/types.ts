@@ -69,3 +69,12 @@ export interface PaymentRow {
   amount: number | null;
   status: string | null;
 }
+
+export interface BannerRow {
+  id: number;
+  image_url: string | null;
+  title: string | null;
+  subtitle: string | null;
+  sort_order: number | null;
+  is_active: boolean | null;
+}
