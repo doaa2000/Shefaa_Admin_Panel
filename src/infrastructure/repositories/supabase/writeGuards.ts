@@ -33,7 +33,10 @@ export function describeWriteError(error: unknown): Error {
   if (
     code === 'PGRST116' ||
     code === '42501' ||
-    message.includes('row-level security')
+    // Storage answers in its own words for the same refusal.
+    code === 'Unauthorized' ||
+    message.includes('row-level security') ||
+    message.includes('violates row-level security policy')
   ) {
     return new Error(NOT_AN_ADMIN);
   }

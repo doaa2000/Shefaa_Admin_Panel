@@ -4,6 +4,7 @@ import type { EntityId } from '@/shared/types';
 import { getSupabaseClient } from '@/infrastructure/supabase/client';
 import { toBanner } from '@/infrastructure/mappers/banner.mapper';
 import type { BannerRow } from '@/infrastructure/supabase/types';
+import { assertDeleted, describeWriteError } from './writeGuards';
 
 const TABLE = 'banners';
 const BUCKET = 'banners';
@@ -36,13 +37,20 @@ export class SupabaseBannersRepository implements IBannersRepository {
       ? this.db.from(TABLE).update(payload).eq('id', Number(input.id))
       : this.db.from(TABLE).insert(payload);
     const { data, error } = await query.select(SELECT).single();
-    if (error) throw error;
+    if (error) throw describeWriteError(error);
     return toBanner(data as BannerRow);
   }
 
   async delete(id: EntityId): Promise<void> {
-    const { error } = await this.db.from(TABLE).delete().eq('id', Number(id));
-    if (error) throw error;
+    // Counted, not assumed: row level security reports a refused delete as a
+    // clean delete of nothing. See writeGuards.
+    const { data, error } = await this.db
+      .from(TABLE)
+      .delete()
+      .eq('id', Number(id))
+      .select('id');
+    if (error) throw describeWriteError(error);
+    assertDeleted(data, 'The banner');
   }
 
   async uploadImage(file: File): Promise<string> {
@@ -56,7 +64,9 @@ export class SupabaseBannersRepository implements IBannersRepository {
     const { error } = await this.db.storage
       .from(BUCKET)
       .upload(path, file, { cacheControl: '3600', contentType: file.type || undefined });
-    if (error) throw error;
+    // The bucket has its own policies, so a picture can be refused for the same
+    // reason a row can, and the raw message says as little.
+    if (error) throw describeWriteError(error);
 
     return this.db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
   }
