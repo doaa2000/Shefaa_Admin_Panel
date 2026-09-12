@@ -13,6 +13,7 @@ import { useDoctorsStore } from '@/presentation/stores/doctors.store';
 import { useSpecializationsStore } from '@/presentation/stores/specializations.store';
 import { useAppointmentsStore } from '@/presentation/stores/appointments.store';
 import { usePatientsStore } from '@/presentation/stores/patients.store';
+import { useBannersStore } from '@/presentation/stores/banners.store';
 import { formatNumber } from '@/shared/utils/format';
 
 const { t, locale, setLocale } = useI18n();
@@ -26,6 +27,7 @@ const doctors = useDoctorsStore();
 const specs = useSpecializationsStore();
 const appts = useAppointmentsStore();
 const patients = usePatientsStore();
+const banners = useBannersStore();
 
 // Preload counts shown in the nav.
 onMounted(() => {
@@ -33,6 +35,7 @@ onMounted(() => {
   specs.fetchAll();
   appts.fetchAll();
   patients.fetchAll();
+  banners.fetchAll();
 });
 
 const navGroups = computed(() => [
@@ -48,6 +51,7 @@ const navGroups = computed(() => [
       { id: 'locations', label: t.value('nav_locations'), icon: 'locations', count: null },
       { id: 'appointments', label: t.value('nav_appointments'), icon: 'appointments', count: appts.items.length },
       { id: 'users', label: t.value('nav_users'), icon: 'users', count: patients.items.length },
+      { id: 'banners', label: t.value('nav_banners'), icon: 'image', count: banners.items.length },
     ],
   },
 ]);

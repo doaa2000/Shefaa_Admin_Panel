@@ -15,6 +15,7 @@ import type { IClinicsRepository } from '@/domain/repositories/IClinicsRepositor
 import type { IAppointmentsRepository } from '@/domain/repositories/IAppointmentsRepository';
 import type { IDashboardRepository } from '@/domain/repositories/IDashboardRepository';
 import type { IAuthRepository } from '@/domain/repositories/IAuthRepository';
+import type { IBannersRepository } from '@/domain/repositories/IBannersRepository';
 
 // Local implementations
 import { LocalDoctorsRepository } from '@/infrastructure/repositories/local/LocalDoctorsRepository';
@@ -24,6 +25,7 @@ import { LocalClinicsRepository } from '@/infrastructure/repositories/local/Loca
 import { LocalAppointmentsRepository } from '@/infrastructure/repositories/local/LocalAppointmentsRepository';
 import { LocalDashboardRepository } from '@/infrastructure/repositories/local/LocalDashboardRepository';
 import { LocalAuthRepository } from '@/infrastructure/repositories/local/LocalAuthRepository';
+import { LocalBannersRepository } from '@/infrastructure/repositories/local/LocalBannersRepository';
 
 // Supabase implementations
 import { SupabaseDoctorsRepository } from '@/infrastructure/repositories/supabase/SupabaseDoctorsRepository';
@@ -33,6 +35,7 @@ import { SupabaseClinicsRepository } from '@/infrastructure/repositories/supabas
 import { SupabaseAppointmentsRepository } from '@/infrastructure/repositories/supabase/SupabaseAppointmentsRepository';
 import { SupabaseDashboardRepository } from '@/infrastructure/repositories/supabase/SupabaseDashboardRepository';
 import { SupabaseAuthRepository } from '@/infrastructure/repositories/supabase/SupabaseAuthRepository';
+import { SupabaseBannersRepository } from '@/infrastructure/repositories/supabase/SupabaseBannersRepository';
 
 // Services
 import { DoctorsService } from '@/application/services/DoctorsService';
@@ -42,6 +45,7 @@ import { LocationsService } from '@/application/services/LocationsService';
 import { AppointmentsService } from '@/application/services/AppointmentsService';
 import { DashboardService } from '@/application/services/DashboardService';
 import { AuthService } from '@/application/services/AuthService';
+import { BannersService } from '@/application/services/BannersService';
 
 type Provider = 'local' | 'supabase';
 
@@ -53,6 +57,7 @@ interface RepoBindings {
   appointments: () => IAppointmentsRepository;
   dashboard: () => IDashboardRepository;
   auth: () => IAuthRepository;
+  banners: () => IBannersRepository;
 }
 
 const BINDINGS: Record<Provider, RepoBindings> = {
@@ -64,6 +69,7 @@ const BINDINGS: Record<Provider, RepoBindings> = {
     appointments: () => new LocalAppointmentsRepository(),
     dashboard: () => new LocalDashboardRepository(),
     auth: () => new LocalAuthRepository(),
+    banners: () => new LocalBannersRepository(),
   },
   supabase: {
     doctors: () => new SupabaseDoctorsRepository(),
@@ -73,6 +79,7 @@ const BINDINGS: Record<Provider, RepoBindings> = {
     appointments: () => new SupabaseAppointmentsRepository(),
     dashboard: () => new SupabaseDashboardRepository(),
     auth: () => new SupabaseAuthRepository(),
+    banners: () => new SupabaseBannersRepository(),
   },
 };
 
@@ -89,6 +96,7 @@ export function registerServices(): void {
   container.register(TOKENS.AppointmentsRepository, b.appointments);
   container.register(TOKENS.DashboardRepository, b.dashboard);
   container.register(TOKENS.AuthRepository, b.auth);
+  container.register(TOKENS.BannersRepository, b.banners);
 
   // --- Bind services (depend only on repository abstractions) ---
   container.register(
@@ -121,4 +129,8 @@ export function registerServices(): void {
       ),
   );
   container.register(TOKENS.AuthService, (c) => new AuthService(c.resolve(TOKENS.AuthRepository)));
+  container.register(
+    TOKENS.BannersService,
+    (c) => new BannersService(c.resolve(TOKENS.BannersRepository)),
+  );
 }

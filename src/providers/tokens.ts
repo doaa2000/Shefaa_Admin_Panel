@@ -6,6 +6,7 @@ import type { IClinicsRepository } from '@/domain/repositories/IClinicsRepositor
 import type { IAppointmentsRepository } from '@/domain/repositories/IAppointmentsRepository';
 import type { IDashboardRepository } from '@/domain/repositories/IDashboardRepository';
 import type { IAuthRepository } from '@/domain/repositories/IAuthRepository';
+import type { IBannersRepository } from '@/domain/repositories/IBannersRepository';
 import type { DoctorsService } from '@/application/services/DoctorsService';
 import type { PatientsService } from '@/application/services/PatientsService';
 import type { SpecializationsService } from '@/application/services/SpecializationsService';
@@ -13,6 +14,7 @@ import type { LocationsService } from '@/application/services/LocationsService';
 import type { AppointmentsService } from '@/application/services/AppointmentsService';
 import type { DashboardService } from '@/application/services/DashboardService';
 import type { AuthService } from '@/application/services/AuthService';
+import type { BannersService } from '@/application/services/BannersService';
 
 /** Repository tokens (domain abstractions). */
 export const TOKENS = {
@@ -24,6 +26,7 @@ export const TOKENS = {
   AppointmentsRepository: createToken<IAppointmentsRepository>('IAppointmentsRepository'),
   DashboardRepository: createToken<IDashboardRepository>('IDashboardRepository'),
   AuthRepository: createToken<IAuthRepository>('IAuthRepository'),
+  BannersRepository: createToken<IBannersRepository>('IBannersRepository'),
 
   // Services
   DoctorsService: createToken<DoctorsService>('DoctorsService'),
@@ -33,4 +36,5 @@ export const TOKENS = {
   AppointmentsService: createToken<AppointmentsService>('AppointmentsService'),
   DashboardService: createToken<DashboardService>('DashboardService'),
   AuthService: createToken<AuthService>('AuthService'),
+  BannersService: createToken<BannersService>('BannersService'),
 } as const;

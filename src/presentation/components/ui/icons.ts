@@ -42,6 +42,7 @@ export const ICONS: Record<string, IconDef> = {
   menu: { inner: '<path d="M4 6h16M4 12h16M4 18h16"/>' },
   user: { inner: '<circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/>' },
   eye: { inner: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.8"/>' },
+  image: { inner: '<rect x="3" y="4.5" width="18" height="15" rx="2.5"/><circle cx="8.5" cy="10" r="1.6"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/>' },
   stethoscope: { inner: '<path d="M6 4H4.5v5A4.5 4.5 0 0 0 9 13.5 4.5 4.5 0 0 0 13.5 9V4H12"/><path d="M9 13.5V16a4 4 0 0 0 8 0v-2"/><circle cx="18" cy="11" r="2"/>' },
   sparkle: { inner: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/>' },
   dots: { inner: '<circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/>' },
