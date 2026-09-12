@@ -51,7 +51,8 @@ function isRefusal(error: unknown): boolean {
     // PostgREST saying `.single()` got no row back, which after an update
     // means the row was there but out of reach.
     code === 'PGRST116' ||
-    // Postgres refusing an insert outright.
+    // Postgres refusing an insert outright, and the code raised by the
+    // is_admin() guard inside admin_dashboard_stats.
     code === '42501' ||
     // Storage answers in its own words for the same refusal.
     code === 'Unauthorized' ||
