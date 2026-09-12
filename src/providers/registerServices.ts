@@ -6,6 +6,7 @@
  */
 import { container } from './container';
 import { TOKENS } from './tokens';
+import { backendProvider } from '@/shared/utils/backend';
 
 // Repository interfaces
 import type { IDoctorsRepository } from '@/domain/repositories/IDoctorsRepository';
@@ -84,8 +85,9 @@ const BINDINGS: Record<Provider, RepoBindings> = {
 };
 
 export function registerServices(): void {
-  const provider: Provider =
-    import.meta.env.VITE_BACKEND_PROVIDER === 'supabase' ? 'supabase' : 'local';
+  // One answer, shared with the UI: the panel says out loud when it is on the
+  // local backend, because a silent fallback looks exactly like a working one.
+  const provider: Provider = backendProvider();
   const b = BINDINGS[provider];
 
   // --- Bind repositories (the only provider-specific layer) ---

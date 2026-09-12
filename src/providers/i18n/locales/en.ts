@@ -192,4 +192,5 @@ export const en: Record<string, string> = {
   bannerMoveDown: 'Move down',
   bannerShow: 'Show in the app',
   bannerHide: 'Hide from the app',
+  demoBanner: 'Demo mode — changes are saved in this browser only and never reach the app. Add a .env file with VITE_BACKEND_PROVIDER=supabase to connect.',
 };
