@@ -38,7 +38,7 @@ export class SupabaseSpecializationsRepository implements ISpecializationsReposi
       ? this.db.from(TABLE).update(payload).eq('id', Number(input.id))
       : this.db.from(TABLE).insert(payload);
     const { data, error } = await query.select(SELECT).single();
-    if (error) throw describeWriteError(error);
+    if (error) throw await describeWriteError(error, this.db);
     return toSpecialization(data as SpecialtyRow);
   }
 
@@ -50,7 +50,7 @@ export class SupabaseSpecializationsRepository implements ISpecializationsReposi
       .delete()
       .eq('id', Number(id))
       .select('id');
-    if (error) throw describeWriteError(error);
-    assertDeleted(data, 'The specialization');
+    if (error) throw await describeWriteError(error, this.db);
+    await assertDeleted(data, 'The specialization', this.db);
   }
 }

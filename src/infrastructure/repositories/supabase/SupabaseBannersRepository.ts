@@ -37,7 +37,7 @@ export class SupabaseBannersRepository implements IBannersRepository {
       ? this.db.from(TABLE).update(payload).eq('id', Number(input.id))
       : this.db.from(TABLE).insert(payload);
     const { data, error } = await query.select(SELECT).single();
-    if (error) throw describeWriteError(error);
+    if (error) throw await describeWriteError(error, this.db);
     return toBanner(data as BannerRow);
   }
 
@@ -49,8 +49,8 @@ export class SupabaseBannersRepository implements IBannersRepository {
       .delete()
       .eq('id', Number(id))
       .select('id');
-    if (error) throw describeWriteError(error);
-    assertDeleted(data, 'The banner');
+    if (error) throw await describeWriteError(error, this.db);
+    await assertDeleted(data, 'The banner', this.db);
   }
 
   async uploadImage(file: File): Promise<string> {
@@ -66,7 +66,7 @@ export class SupabaseBannersRepository implements IBannersRepository {
       .upload(path, file, { cacheControl: '3600', contentType: file.type || undefined });
     // The bucket has its own policies, so a picture can be refused for the same
     // reason a row can, and the raw message says as little.
-    if (error) throw describeWriteError(error);
+    if (error) throw await describeWriteError(error, this.db);
 
     return this.db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
   }

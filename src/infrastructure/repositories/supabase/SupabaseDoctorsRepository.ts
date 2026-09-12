@@ -58,8 +58,8 @@ export class SupabaseDoctorsRepository implements IDoctorsRepository {
       .delete()
       .eq('id', Number(id))
       .select('id');
-    if (error) throw describeWriteError(error);
-    assertDeleted(data, 'The doctor');
+    if (error) throw await describeWriteError(error, this.db);
+    await assertDeleted(data, 'The doctor', this.db);
   }
 
   async setStatus(id: EntityId, active: boolean): Promise<Doctor> {
