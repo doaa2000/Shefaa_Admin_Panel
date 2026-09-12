@@ -192,4 +192,5 @@ export const ar: Record<string, string> = {
   bannerMoveDown: 'تحريك لأسفل',
   bannerShow: 'إظهار في التطبيق',
   bannerHide: 'إخفاء من التطبيق',
+  demoBanner: 'وضع تجريبي — التعديلات تُحفظ في هذا المتصفح فقط ولا تصل إلى التطبيق. أضيفي ملف ‎.env‎ يحتوي على VITE_BACKEND_PROVIDER=supabase للاتصال.',
 };

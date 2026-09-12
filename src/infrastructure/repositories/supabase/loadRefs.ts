@@ -17,7 +17,7 @@ export async function loadRefMaps(db: SupabaseClient): Promise<RefMaps> {
     db.from('specialties').select('id, name, name_ar, icon, color, base_fee, description'),
     db.from('Clinics').select('id, name, address, city_id'),
     db.from('Cities').select('id, name, governorate_id'),
-    db.from('Governorates').select('id, name, country_id'),
+    db.from('Governorates').select('id, name'),
   ]);
   if (specs.error) throw specs.error;
   if (clinics.error) throw clinics.error;

@@ -10,7 +10,7 @@ export class SupabaseClinicsRepository implements IClinicsRepository {
 
   async listTree(): Promise<Governorate[]> {
     const [govs, cities, clinics] = await Promise.all([
-      this.db.from('Governorates').select('id, name, country_id').order('name'),
+      this.db.from('Governorates').select('id, name').order('name'),
       this.db.from('Cities').select('id, name, governorate_id').order('name'),
       this.db.from('Clinics').select('id, name, address, city_id').order('name'),
     ]);

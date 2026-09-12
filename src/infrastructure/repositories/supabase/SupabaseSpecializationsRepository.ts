@@ -4,6 +4,7 @@ import type { EntityId } from '@/shared/types';
 import { getSupabaseClient } from '@/infrastructure/supabase/client';
 import { toSpecialization } from '@/infrastructure/mappers/specialization.mapper';
 import type { SpecialtyRow } from '@/infrastructure/supabase/types';
+import { assertDeleted, describeWriteError } from './writeGuards';
 
 const TABLE = 'specialties';
 const SELECT = 'id, name, icon, name_ar, description, color, base_fee';
@@ -37,12 +38,19 @@ export class SupabaseSpecializationsRepository implements ISpecializationsReposi
       ? this.db.from(TABLE).update(payload).eq('id', Number(input.id))
       : this.db.from(TABLE).insert(payload);
     const { data, error } = await query.select(SELECT).single();
-    if (error) throw error;
+    if (error) throw await describeWriteError(error, this.db);
     return toSpecialization(data as SpecialtyRow);
   }
 
   async delete(id: EntityId): Promise<void> {
-    const { error } = await this.db.from(TABLE).delete().eq('id', Number(id));
-    if (error) throw error;
+    // `select()` so the deleted rows come back and can be counted: a delete
+    // that removed nothing is not a delete. See writeGuards.
+    const { data, error } = await this.db
+      .from(TABLE)
+      .delete()
+      .eq('id', Number(id))
+      .select('id');
+    if (error) throw await describeWriteError(error, this.db);
+    await assertDeleted(data, 'The specialization', this.db);
   }
 }

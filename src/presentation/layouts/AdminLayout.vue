@@ -15,6 +15,7 @@ import { useAppointmentsStore } from '@/presentation/stores/appointments.store';
 import { usePatientsStore } from '@/presentation/stores/patients.store';
 import { useBannersStore } from '@/presentation/stores/banners.store';
 import { formatNumber } from '@/shared/utils/format';
+import { isLocalBackend } from '@/shared/utils/backend';
 
 const { t, locale, setLocale } = useI18n();
 const { admin, signOut } = useAuth();
@@ -65,6 +66,9 @@ function go(id: string): void {
   ui.closeMobileNav();
 }
 
+// Read once: the provider is fixed for the life of the page.
+const onLocalBackend = isLocalBackend();
+
 const menuOpen = ref(false);
 async function onLogout(): Promise<void> {
   menuOpen.value = false;
@@ -113,6 +117,17 @@ async function onLogout(): Promise<void> {
     </aside>
 
     <div class="main">
+      <!--
+        Without a .env file the panel falls back to the local backend, where
+        every change is written to this browser and reaches neither the app nor
+        anybody else. That is invisible until somebody notices the app showing
+        different data, so it says so here instead.
+      -->
+      <div v-if="onLocalBackend" class="demo-bar">
+        <AppIcon name="bell" :size="16" />
+        <span>{{ t('demoBanner') }}</span>
+      </div>
+
       <header class="header">
         <button
           class="icon-btn"
