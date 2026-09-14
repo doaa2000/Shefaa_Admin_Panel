@@ -53,6 +53,7 @@ const navGroups = computed(() => [
       { id: 'appointments', label: t.value('nav_appointments'), icon: 'appointments', count: appts.items.length },
       { id: 'users', label: t.value('nav_users'), icon: 'users', count: patients.items.length },
       { id: 'banners', label: t.value('nav_banners'), icon: 'image', count: banners.items.length },
+      { id: 'commission', label: t.value('nav_commission'), icon: 'cash', count: null },
     ],
   },
 ]);

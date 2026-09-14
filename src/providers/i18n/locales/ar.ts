@@ -7,6 +7,18 @@ export const ar: Record<string, string> = {
   upgradeMsg: 'افتح التحليلات والتقارير المتقدمة.',
   upgradeBtn: 'عرض الخطط',
 
+  // Commission
+  commissionDue: 'العمولة المستحقة',
+  commissionFees: 'إجمالي الكشوفات',
+  commissionBookings: 'حجوزات محتسبة',
+  commissionCancelled: 'ملغاة',
+  commissionNet: 'صافي الطبيب',
+  commissionNoShow: 'لم يحضر',
+  commissionPrevMonth: 'الشهر السابق',
+  commissionNextMonth: 'الشهر التالي',
+  commissionBasis: 'تُحتسب على الحجوزات التي لم تُلغَ قبل موعدها',
+  commissionByDoctor: '{count} بمعرفة الطبيب',
+  commissionUnrated: '{count} حجوزات سابقة لنظام العمولة، ولا تُحتسب عليها عمولة.',
   nav_dashboard: 'الرئيسية',
   nav_doctors: 'الأطباء',
   nav_specializations: 'التخصصات',
@@ -14,6 +26,7 @@ export const ar: Record<string, string> = {
   nav_appointments: 'الحجوزات',
   nav_users: 'المستخدمون',
   nav_banners: 'بانرات الرئيسية',
+  nav_commission: 'العمولات',
   nav_main: 'الرئيسية',
   nav_manage: 'الإدارة',
 
@@ -26,6 +39,7 @@ export const ar: Record<string, string> = {
   sub_locations: 'المحافظات والمدن وهيكل العيادات',
   sub_appointments: 'جميع الحجوزات في الشبكة',
   sub_users: 'المرضى المسجلون',
+  sub_commission: 'عمولة المنصة على حجوزات التطبيق، لكل طبيب',
   sub_banners: 'الصور التي تظهر في الشريط المتحرك بالصفحة الرئيسية للتطبيق',
 
   search: 'بحث…',
