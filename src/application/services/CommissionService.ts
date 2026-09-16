@@ -7,4 +7,16 @@ export class CommissionService {
   getStatement(from: string, to: string): Promise<CommissionStatement> {
     return this.repo.getStatement(from, to);
   }
+
+  issue(doctorId: number, from: string, to: string): Promise<void> {
+    return this.repo.issue(doctorId, from, to);
+  }
+
+  settle(invoiceId: number, note?: string): Promise<void> {
+    return this.repo.settle(invoiceId, note);
+  }
+
+  voidInvoice(invoiceId: number, reason: string): Promise<void> {
+    return this.repo.voidInvoice(invoiceId, reason);
+  }
 }

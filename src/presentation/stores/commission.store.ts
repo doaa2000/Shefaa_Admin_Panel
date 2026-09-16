@@ -61,5 +61,36 @@ export const useCommissionStore = defineStore('commission', () => {
     await setMonth(d.getFullYear(), d.getMonth());
   }
 
-  return { year, month, statement, loading, error, load, setMonth, step };
+  /** The three settling actions. Each reloads afterwards rather than patching
+   *  the row: the invoice freezes figures the statement does not, and guessing
+   *  here at what the database decided is how the two start to differ. */
+  async function issue(doctorId: number): Promise<void> {
+    const range = monthRange(year.value, month.value);
+    await service().issue(doctorId, range.from, range.to);
+    await load();
+  }
+
+  async function settle(invoiceId: number, note?: string): Promise<void> {
+    await service().settle(invoiceId, note);
+    await load();
+  }
+
+  async function voidInvoice(invoiceId: number, reason: string): Promise<void> {
+    await service().voidInvoice(invoiceId, reason);
+    await load();
+  }
+
+  return {
+    year,
+    month,
+    statement,
+    loading,
+    error,
+    load,
+    setMonth,
+    step,
+    issue,
+    settle,
+    voidInvoice,
+  };
 });
