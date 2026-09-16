@@ -24,6 +24,11 @@ export const routes: RouteRecordRaw[] = [
       },
       { path: 'users', name: 'users', component: () => import('@/presentation/pages/UsersPage.vue') },
       { path: 'banners', name: 'banners', component: () => import('@/presentation/pages/BannersPage.vue') },
+      {
+        path: 'commission',
+        name: 'commission',
+        component: () => import('@/presentation/pages/CommissionPage.vue'),
+      },
     ],
   },
   {
