@@ -19,6 +19,16 @@ export interface CommissionRow {
   noShow: number;
   /** Bookings taken before there was a share, carrying none. */
   unrated: number;
+
+  /** The invoice raised for this doctor and this exact period, if there is
+   *  one. Null until the month is billed; a voided invoice frees the period
+   *  and reads as null again. */
+  invoiceId: number | null;
+  invoiceStatus: 'issued' | 'paid' | null;
+  /** What the invoice claimed when it was raised. It does not follow the
+   *  figure above: a bill that changes after it was sent is not a bill. */
+  invoicedCommission: number | null;
+  invoicePaidAt: string | null;
 }
 
 export interface CommissionTotals {
@@ -30,6 +40,9 @@ export interface CommissionTotals {
   cancelled: number;
   noShow: number;
   unrated: number;
+  /** Billed for this period, and of that, actually collected. */
+  invoiced: number;
+  collected: number;
 }
 
 export interface CommissionStatement {

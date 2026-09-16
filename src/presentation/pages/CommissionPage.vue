@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import AppIcon from '@/presentation/components/ui/AppIcon.vue';
 import BaseButton from '@/presentation/components/ui/BaseButton.vue';
@@ -7,10 +7,14 @@ import EmptyState from '@/presentation/components/ui/EmptyState.vue';
 import LoadingState from '@/presentation/components/ui/LoadingState.vue';
 import ErrorState from '@/presentation/components/ui/ErrorState.vue';
 import { useCommissionStore } from '@/presentation/stores/commission.store';
+import InvoiceNoteModal from '@/presentation/components/commission/InvoiceNoteModal.vue';
 import { useI18n } from '@/presentation/composables/useI18n';
+import { useToast } from '@/presentation/composables/useToast';
 import { formatMoney, formatNumber } from '@/shared/utils/format';
+import type { CommissionStatement } from '@/domain/entities/CommissionStatement';
 
 const { t, locale } = useI18n();
+const { toast } = useToast();
 const store = useCommissionStore();
 const { statement, loading, error, year, month } = storeToRefs(store);
 
@@ -29,6 +33,37 @@ const canGoForward = computed(() => {
   return year.value < now.getFullYear() || month.value < now.getMonth();
 });
 
+type Row = CommissionStatement['rows'][number];
+
+/** Which invoice a modal is open for, and what it will do to it. */
+const settling = ref<Row | null>(null);
+const voiding = ref<Row | null>(null);
+
+async function run(action: () => Promise<void>, done: string): Promise<void> {
+  try {
+    await action();
+    toast(t.value(done));
+  } catch (e) {
+    toast((e as Error).message || 'Error', 'danger');
+  }
+}
+
+const onIssue = (row: Row) => run(() => store.issue(row.doctorId), 'invoiceIssued');
+
+async function onSettle(note: string): Promise<void> {
+  const row = settling.value;
+  settling.value = null;
+  if (!row?.invoiceId) return;
+  await run(() => store.settle(row.invoiceId as number, note), 'invoiceSettled');
+}
+
+async function onVoid(reason: string): Promise<void> {
+  const row = voiding.value;
+  voiding.value = null;
+  if (!row?.invoiceId) return;
+  await run(() => store.voidInvoice(row.invoiceId as number, reason), 'invoiceVoided');
+}
+
 const money = (value: number) => formatMoney(value, locale.value);
 const count = (value: number) => formatNumber(value, locale.value);
 
@@ -39,7 +74,8 @@ const cards = computed(() => {
     { key: 'commission', label: t.value('commissionDue'), value: money(totals.commission), icon: 'cash', bg: 'var(--ok-soft)', fg: 'var(--ok)' },
     { key: 'fees', label: t.value('commissionFees'), value: money(totals.fees), icon: 'trendUp', bg: 'var(--accent-soft)', fg: 'var(--accent-deep)' },
     { key: 'bookings', label: t.value('commissionBookings'), value: count(totals.bookings), icon: 'calendar', bg: 'var(--purple-soft)', fg: 'var(--purple)' },
-    { key: 'cancelled', label: t.value('commissionCancelled'), value: count(totals.cancelled), icon: 'x', bg: 'var(--warn-soft)', fg: 'var(--warn)' },
+    { key: 'invoiced', label: t.value('commissionInvoiced'), value: money(totals.invoiced), icon: 'check', bg: 'var(--info-soft)', fg: 'var(--info)' },
+    { key: 'collected', label: t.value('commissionCollected'), value: money(totals.collected), icon: 'cash', bg: 'var(--purple-soft)', fg: 'var(--purple)' },
   ];
 });
 </script>
@@ -93,6 +129,7 @@ const cards = computed(() => {
               <th style="text-align: end">{{ t('commissionNet') }}</th>
               <th style="text-align: center">{{ t('commissionCancelled') }}</th>
               <th style="text-align: center">{{ t('commissionNoShow') }}</th>
+              <th style="text-align: end">{{ t('commissionInvoice') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -114,10 +151,59 @@ const cards = computed(() => {
               <td style="text-align: center">
                 {{ count(row.noShow) }}
               </td>
+              <td style="text-align: end">
+                <!-- Not invoiced yet, invoiced and waiting, or settled. The
+                     amount stays beside a paid one: the invoice froze it, and
+                     the figure on the left has moved on since. -->
+                <div class="row-actions" style="justify-content: flex-end">
+                  <template v-if="!row.invoiceId">
+                    <BaseButton variant="soft" small @click="onIssue(row)">
+                      {{ t('commissionIssue') }}
+                    </BaseButton>
+                  </template>
+                  <template v-else-if="row.invoiceStatus === 'issued'">
+                    <span class="badge warn">{{ t('commissionIssued') }}</span>
+                    <BaseButton variant="primary" small @click="settling = row">
+                      {{ t('commissionSettle') }}
+                    </BaseButton>
+                    <BaseButton variant="ghost" small @click="voiding = row">
+                      {{ t('commissionVoid') }}
+                    </BaseButton>
+                  </template>
+                  <template v-else>
+                    <span class="badge ok">
+                      {{ t('commissionPaid') }} · {{ money(row.invoicedCommission ?? 0) }}
+                    </span>
+                    <BaseButton variant="ghost" small @click="voiding = row">
+                      {{ t('commissionVoid') }}
+                    </BaseButton>
+                  </template>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
     </template>
+
+    <InvoiceNoteModal
+      v-if="settling"
+      :title="t('commissionSettleTitle')"
+      :label="t('commissionSettleLabel')"
+      :hint="t('commissionSettleHint')"
+      @close="settling = null"
+      @submit="onSettle"
+    />
+
+    <InvoiceNoteModal
+      v-if="voiding"
+      :title="t('commissionVoidTitle')"
+      :label="t('commissionVoidLabel')"
+      :hint="t('commissionVoidHint')"
+      required
+      danger
+      @close="voiding = null"
+      @submit="onVoid"
+    />
   </div>
 </template>

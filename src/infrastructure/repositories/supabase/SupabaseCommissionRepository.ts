@@ -23,4 +23,29 @@ export class SupabaseCommissionRepository implements ICommissionRepository {
     if (!data) throw new Error('The statement came back empty.');
     return data as unknown as CommissionStatement;
   }
+
+  async issue(doctorId: number, from: string, to: string): Promise<void> {
+    const { error } = await this.db.rpc('issue_commission_invoice', {
+      p_doctor: doctorId,
+      p_from: from,
+      p_to: to,
+    });
+    if (error) throw await describeWriteError(error, this.db);
+  }
+
+  async settle(invoiceId: number, note?: string): Promise<void> {
+    const { error } = await this.db.rpc('settle_commission_invoice', {
+      p_invoice: invoiceId,
+      p_note: note ?? null,
+    });
+    if (error) throw await describeWriteError(error, this.db);
+  }
+
+  async voidInvoice(invoiceId: number, reason: string): Promise<void> {
+    const { error } = await this.db.rpc('void_commission_invoice', {
+      p_invoice: invoiceId,
+      p_reason: reason,
+    });
+    if (error) throw await describeWriteError(error, this.db);
+  }
 }

@@ -9,10 +9,23 @@ import type { CommissionStatement } from '@/domain/entities/CommissionStatement'
  * a doctor gets invoiced from, and a convincing fake one is a number somebody
  * will act on. So this says plainly that it has nothing to show.
  */
+const UNAVAILABLE =
+  'The commission statement needs the real backend. The demo data has no money in it.';
+
 export class LocalCommissionRepository implements ICommissionRepository {
   async getStatement(): Promise<CommissionStatement> {
-    throw new Error(
-      'The commission statement needs the real backend. The demo data has no money in it.',
-    );
+    throw new Error(UNAVAILABLE);
+  }
+
+  async issue(): Promise<void> {
+    throw new Error(UNAVAILABLE);
+  }
+
+  async settle(): Promise<void> {
+    throw new Error(UNAVAILABLE);
+  }
+
+  async voidInvoice(): Promise<void> {
+    throw new Error(UNAVAILABLE);
   }
 }
