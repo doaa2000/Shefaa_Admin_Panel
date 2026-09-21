@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue';
 import AppIcon from '@/presentation/components/ui/AppIcon.vue';
 import AppAvatar from '@/presentation/components/ui/AppAvatar.vue';
 import StatusBadge from '@/presentation/components/ui/StatusBadge.vue';
+import EmptyState from '@/presentation/components/ui/EmptyState.vue';
 import LoadingState from '@/presentation/components/ui/LoadingState.vue';
 import ErrorState from '@/presentation/components/ui/ErrorState.vue';
 import BarChart from '@/presentation/components/charts/BarChart.vue';
@@ -31,7 +32,8 @@ interface Card {
   key: string;
   label: string;
   value: string;
-  trend: number;
+  /** Null when the figure is not compared against anything. */
+  trend: number | null;
   icon: string;
   bg: string;
   fg: string;
@@ -42,10 +44,23 @@ const cards = computed<Card[]>(() => {
   if (!s) return [];
   return [
     { key: 'bookings', label: t.value('stat_bookings'), value: formatNumber(s.bookings.value, locale.value), trend: s.bookings.trend, icon: 'calendar', bg: 'var(--accent-soft)', fg: 'var(--accent-deep)' },
-    { key: 'doctors', label: t.value('stat_doctors'), value: formatNumber(dash.activeDoctors.value, locale.value), trend: s.doctors.trend, icon: 'stethoscope', bg: 'var(--purple-soft)', fg: 'var(--purple)' },
+    // No trend for this one: admin_dashboard_stats returns a literal zero
+    // rather than a comparison, and "▲ 0% vs last month" is a measurement
+    // that was never taken.
+    { key: 'doctors', label: t.value('stat_doctors'), value: formatNumber(dash.activeDoctors.value, locale.value), trend: null, icon: 'stethoscope', bg: 'var(--purple-soft)', fg: 'var(--purple)' },
     { key: 'revenue', label: t.value('stat_revenue'), value: formatMoney(s.revenue.value, locale.value), trend: s.revenue.trend, icon: 'cash', bg: 'var(--ok-soft)', fg: 'var(--ok)' },
     { key: 'patients', label: t.value('stat_patients'), value: formatNumber(s.patients.value, locale.value), trend: s.patients.trend, icon: 'heart', bg: 'var(--warn-soft)', fg: 'var(--warn)' },
   ];
+});
+
+/** The bars' own month-over-month, in the colour of its direction. */
+const trendBadge = computed(() => {
+  const t0 = dash.stats.value?.bookings.trend ?? 0;
+  const sign = t0 > 0 ? '+' : '';
+  return {
+    tone: t0 > 0 ? 'ok' : t0 < 0 ? 'danger' : 'neutral',
+    text: `${sign}${formatPercent(t0, locale.value)}%`,
+  };
 });
 
 const statusRows = ['confirmed', 'pending', 'completed'] as const;
@@ -66,7 +81,7 @@ const donutValue = computed(
         </div>
         <div class="stat-val">{{ card.value }}</div>
         <div class="stat-label">{{ card.label }}</div>
-        <div class="stat-trend" :class="card.trend >= 0 ? 'up' : 'down'">
+        <div v-if="card.trend !== null" class="stat-trend" :class="card.trend >= 0 ? 'up' : 'down'">
           <AppIcon :name="card.trend >= 0 ? 'arrowUp' : 'arrowDn'" :size="13" />
           {{ formatPercent(card.trend, locale) }}%
           <span class="lbl">{{ t('vsLast') }}</span>
@@ -82,7 +97,13 @@ const donutValue = computed(
             <h3>{{ t('bookings_trend') }}</h3>
             <div class="sub">{{ t('bookings_trend_sub') }}</div>
           </div>
-          <span class="badge info"><span class="bdot" />+18.7%</span>
+          <!-- The real month-over-month for the bars underneath. This read a
+               flat +18.7% -- copied from the demo figures, and from the
+               revenue row at that, so it was neither true nor about this
+               chart. -->
+          <span class="badge" :class="trendBadge.tone">
+            <span class="bdot" />{{ trendBadge.text }}
+          </span>
         </div>
         <div class="card-pad">
           <BarChart :data="dash.stats.value.trend.values" :labels="months" />
@@ -129,7 +150,16 @@ const donutValue = computed(
               </div>
             </div>
           </div>
-          <div class="activity">
+          <!-- A platform with a quiet morning is not a platform with a
+               problem, and a blank box says neither. Every other page in the
+               panel says so; this one did not. -->
+          <EmptyState
+            v-if="!dash.activity.value.length"
+            icon="calendar"
+            title="no_activity"
+            body="no_activity_msg"
+          />
+          <div v-else class="activity">
             <div v-for="a in dash.activity.value" :key="a.id" class="act-item">
               <div class="act-time">{{ formatTime(a.datetime, locale) }}</div>
               <div class="act-line">
@@ -151,7 +181,13 @@ const donutValue = computed(
             <div class="sub">{{ t('recent_sub') }}</div>
           </div>
         </div>
-        <div class="table-wrap">
+        <EmptyState
+          v-if="!dash.recent.value.length"
+          icon="appointments"
+          title="no_bookings_yet"
+          body="no_bookings_yet_msg"
+        />
+        <div v-else class="table-wrap">
           <table class="tbl">
             <thead>
               <tr>
