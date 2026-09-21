@@ -42,6 +42,7 @@ export function toDoctor(row: DoctorRow, maps: RefMaps, index = 0): Doctor {
     nameEn: row.name,
     nameAr: row.name,
     email: row.email ?? '',
+    hasAccount: row.user_id != null,
     specializationId: row.specialty_id != null ? String(row.specialty_id) : '',
     specialtyEn: sp?.name ?? row.specialization ?? '',
     specialtyAr: sp?.name_ar ?? sp?.name ?? row.specialization ?? '',

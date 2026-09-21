@@ -20,6 +20,15 @@ export interface Doctor {
   fee: number;
   status: DoctorStatus;
   color: string;
+  /**
+   * Whether a login exists for this clinic yet.
+   *
+   * The account is a separate thing from this row, and until one is made the
+   * doctor cannot open the dashboard at all. The list shows it because a
+   * clinic that is registered but cannot be signed into looks finished and is
+   * not.
+   */
+  hasAccount: boolean;
 }
 
 /** Payload accepted by the doctors service when creating/editing. */
@@ -32,4 +41,10 @@ export interface DoctorInput {
   clinicId: EntityId;
   fee: number;
   status: DoctorStatus;
+}
+
+/** Shown once, right after it is made. Never read back. */
+export interface DoctorCredentials {
+  email: string;
+  password: string;
 }

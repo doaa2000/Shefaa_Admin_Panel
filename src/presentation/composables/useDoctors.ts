@@ -47,5 +47,6 @@ export function useDoctors() {
     save: store.save,
     remove: store.remove,
     toggleStatus: store.toggleStatus,
+    issueAccount: store.issueAccount,
   };
 }

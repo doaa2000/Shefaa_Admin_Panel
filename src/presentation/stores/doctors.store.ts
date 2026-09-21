@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Doctor, DoctorInput } from '@/domain/entities/Doctor';
+import type { Doctor, DoctorCredentials, DoctorInput } from '@/domain/entities/Doctor';
 import type { EntityId } from '@/shared/types';
 import { container } from '@/providers/container';
 import { TOKENS } from '@/providers/tokens';
@@ -45,5 +45,21 @@ export const useDoctorsStore = defineStore('doctors', () => {
     if (idx >= 0) items.value[idx] = updated;
   }
 
-  return { items, loading, error, loaded, fetchAll, save, remove, toggleStatus };
+  /**
+   * Makes this clinic's login, or replaces its password.
+   *
+   * The row is marked as having an account on the way back, so the button that
+   * offered to create one turns into the one that resets it without a reload.
+   */
+  async function issueAccount(
+    doctor: Doctor,
+    action: 'create' | 'reset',
+  ): Promise<DoctorCredentials> {
+    const credentials = await service().issueAccount(doctor, action);
+    const idx = items.value.findIndex((d) => d.id === doctor.id);
+    if (idx >= 0) items.value[idx] = { ...items.value[idx], hasAccount: true };
+    return credentials;
+  }
+
+  return { items, loading, error, loaded, fetchAll, save, remove, toggleStatus, issueAccount };
 });

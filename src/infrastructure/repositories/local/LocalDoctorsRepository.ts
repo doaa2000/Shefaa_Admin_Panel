@@ -1,5 +1,5 @@
 import type { IDoctorsRepository } from '@/domain/repositories/IDoctorsRepository';
-import type { Doctor, DoctorInput } from '@/domain/entities/Doctor';
+import type { DoctorCredentials, Doctor, DoctorInput } from '@/domain/entities/Doctor';
 import type { EntityId } from '@/shared/types';
 import { DoctorStatus } from '@/domain/enums';
 import { colorAt } from '@/shared/utils/color';
@@ -59,6 +59,8 @@ export class LocalDoctorsRepository implements IDoctorsRepository {
       : nameEn;
 
     const doctor: Doctor = {
+      // Nothing on this backend can make an account, so nothing here has one.
+      hasAccount: false,
       id: input.id ?? 'd' + Date.now(),
       nameEn,
       nameAr,
@@ -96,5 +98,17 @@ export class LocalDoctorsRepository implements IDoctorsRepository {
     );
     localDb.write('doctors', doctors);
     return delay(doctors.find((d) => d.id === id)!);
+  }
+  /**
+   * Refused outright on the demo backend.
+   *
+   * Every other write here pretends convincingly, which is the point of a demo
+   * — but an account is not something this panel can pretend to create. A
+   * made-up password that lets nobody in is worse than a clear no, because
+   * somebody would send it to a doctor.
+   */
+  async issueAccount(): Promise<DoctorCredentials> {
+    await delay(null);
+    throw new Error('demo_backend');
   }
 }

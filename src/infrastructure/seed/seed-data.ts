@@ -116,6 +116,8 @@ export const SEED_DOCTORS: Doctor[] = DOCTOR_TUPLES.map((d, i) => {
   const sp = specById(specializationId);
   const fn = nameEn.toLowerCase().replace(/[^a-z]/g, '.');
   return {
+    // Demo figures. No account exists behind any of them.
+    hasAccount: false,
     id: 'd' + (i + 1),
     nameEn: 'Dr. ' + nameEn,
     nameAr: 'د. ' + nameAr,

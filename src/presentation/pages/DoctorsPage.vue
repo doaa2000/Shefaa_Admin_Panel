@@ -5,6 +5,7 @@ import AppAvatar from '@/presentation/components/ui/AppAvatar.vue';
 import StatusBadge from '@/presentation/components/ui/StatusBadge.vue';
 import BaseButton from '@/presentation/components/ui/BaseButton.vue';
 import ActionButton from '@/presentation/components/ui/ActionButton.vue';
+import DoctorCredentialsModal from '@/presentation/components/doctors/DoctorCredentialsModal.vue';
 import SearchBox from '@/presentation/components/ui/SearchBox.vue';
 import FilterSelect from '@/presentation/components/ui/FilterSelect.vue';
 import EmptyState from '@/presentation/components/ui/EmptyState.vue';
@@ -28,6 +29,48 @@ const doctors = useDoctors();
 const editing = ref<Doctor | null>(null);
 const showForm = ref(false);
 const confirmTarget = ref<Doctor | null>(null);
+
+/** Which row is waiting on the function, so its button cannot be pressed twice. */
+const issuingFor = ref<string | null>(null);
+
+/** Shown once, then gone. Never fetched again — the password is not stored. */
+const credentials = ref<{ doctorName: string; email: string; password: string } | null>(null);
+
+/**
+ * Each refusal the function can give, in the words of what to do about it.
+ *
+ * A code like `email_already_in_use` is exact and useless to the person
+ * reading it; what they need is which of the two situations it is and where to
+ * go next.
+ */
+const ACCOUNT_ERRORS: Record<string, string> = {
+  demo_backend: 'err_demo_backend',
+  not_an_admin: 'err_not_an_admin',
+  not_signed_in: 'err_not_signed_in',
+  doctor_has_no_email: 'err_no_email',
+  already_has_account: 'err_already_has_account',
+  email_already_in_use: 'err_email_in_use',
+  no_account_yet: 'err_no_account_yet',
+  doctor_not_found: 'err_doctor_not_found',
+};
+
+async function onIssueAccount(d: Doctor): Promise<void> {
+  if (issuingFor.value) return;
+  issuingFor.value = String(d.id);
+  try {
+    const made = await doctors.issueAccount(d, d.hasAccount ? 'reset' : 'create');
+    credentials.value = {
+      doctorName: pick(d.nameEn, d.nameAr),
+      email: made.email || d.email,
+      password: made.password,
+    };
+  } catch (e) {
+    const key = ACCOUNT_ERRORS[(e as Error).message];
+    toast(key ? t.value(key) : (e as Error).message, 'danger');
+  } finally {
+    issuingFor.value = null;
+  }
+}
 
 onMounted(() => doctors.load());
 
@@ -140,6 +183,18 @@ async function onConfirmDelete(): Promise<void> {
               <td><StatusBadge :status="d.status" /></td>
               <td>
                 <div class="row-actions">
+                  <!-- A clinic without a login is registered but cannot be
+                       opened by the person it belongs to, so this sits first
+                       and calls itself what it does. Once there is one, the
+                       same place offers the only other thing left: a new
+                       password, since the old one cannot be read back. -->
+                  <ActionButton
+                    :icon="d.hasAccount ? 'key' : 'user'"
+                    :tone="d.hasAccount ? 'default' : 'ok'"
+                    :disabled="issuingFor === d.id"
+                    :title="d.hasAccount ? t('reset_password') : t('create_login')"
+                    @click="onIssueAccount(d)"
+                  />
                   <ActionButton
                     icon="power"
                     tone="ok"
@@ -173,4 +228,12 @@ async function onConfirmDelete(): Promise<void> {
       @confirm="onConfirmDelete"
     />
   </div>
+
+    <DoctorCredentialsModal
+      v-if="credentials"
+      :doctor-name="credentials.doctorName"
+      :email="credentials.email"
+      :password="credentials.password"
+      @close="credentials = null"
+    />
 </template>

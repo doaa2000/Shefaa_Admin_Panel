@@ -25,6 +25,8 @@ export interface DoctorRow {
   email: string | null;
   image: string | null;
   title: string | null;
+  /** Null until a login exists for this clinic. */
+  user_id: string | null;
 }
 
 export interface GovernorateRow {

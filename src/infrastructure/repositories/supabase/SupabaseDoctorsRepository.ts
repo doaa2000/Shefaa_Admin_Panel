@@ -5,11 +5,13 @@ import type { EntityId } from '@/shared/types';
 import { DoctorStatus } from '@/domain/enums';
 import { getSupabaseClient } from '@/infrastructure/supabase/client';
 import { toDoctor } from '@/infrastructure/mappers/doctor.mapper';
+import type { DoctorCredentials } from '@/domain/entities/Doctor';
 import { loadRefMaps } from './loadRefs';
 import type { DoctorRow } from '@/infrastructure/supabase/types';
 
 const TABLE = 'Doctors';
-const SELECT = 'id, name, specialty_id, specialization, clinic_id, consultation_fee, status, email, image, title';
+const SELECT =
+  'id, name, specialty_id, specialization, clinic_id, consultation_fee, status, email, image, title, user_id';
 
 export class SupabaseDoctorsRepository implements IDoctorsRepository {
   private db = getSupabaseClient();
@@ -74,5 +76,40 @@ export class SupabaseDoctorsRepository implements IDoctorsRepository {
     ]);
     if (res.error) throw res.error;
     return toDoctor(res.data as DoctorRow, refs);
+  }
+
+  /**
+   * Asks the `doctor-account` function for this clinic's login.
+   *
+   * It runs on Supabase rather than here because making an account needs the
+   * service role key, which bypasses every policy in the database. This panel
+   * is a web page: whatever it holds, every visitor holds. So the key stays on
+   * that side, and we send the admin's own token for it to check.
+   */
+  async issueAccount(id: EntityId, action: 'create' | 'reset'): Promise<DoctorCredentials> {
+    const { data, error } = await this.db.functions.invoke('doctor-account', {
+      body: { action, doctor_id: Number(id) },
+    });
+
+    if (error) {
+      // invoke() reports any non-2xx as a generic FunctionsHttpError, so the
+      // reason the function gave is in the response body rather than in the
+      // error -- fetched here so the page can say which of the refusals it was.
+      let code: string | undefined;
+      const res = (error as { context?: Response }).context;
+      if (res && typeof res.json === 'function') {
+        try {
+          code = ((await res.json()) as { error?: string }).error;
+        } catch {
+          /* no body, or not json: fall through to the generic message */
+        }
+      }
+      throw new Error(code ?? error.message);
+    }
+
+    const answer = data as { ok?: boolean; email?: string; password?: string; error?: string };
+    if (!answer?.ok || !answer.password) throw new Error(answer?.error ?? 'account_failed');
+
+    return { email: answer.email ?? '', password: answer.password };
   }
 }

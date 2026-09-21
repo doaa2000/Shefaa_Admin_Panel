@@ -16,6 +16,11 @@ export const ICONS: Record<string, IconDef> = {
   appointments: { inner: '<rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 3v3M16 3v3M8.5 13.5l2 2 4-4"/>' },
   users: { inner: '<circle cx="9" cy="8" r="3.4"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3.4 3.4 0 0 1 0 6.4M18 14.2a5.5 5.5 0 0 1 3.5 5.1"/>' },
   search: { inner: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/>' },
+  // Two sheets offset: the one being copied and the one it lands on.
+  copy: { inner: '<rect x="9" y="3" width="12" height="12" rx="2"/><path d="M15 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h4"/>' },
+  // A triangle round a bar and a dot -- the warning shape everybody reads.
+  alert: { inner: '<path d="M10.3 4 2.4 18a1.8 1.8 0 0 0 1.6 2.7h16a1.8 1.8 0 0 0 1.6-2.7L13.7 4a1.8 1.8 0 0 0-3.4 0Z"/><path d="M12 9.5v4.5M12 17.5h.01"/>' },
+  key: { inner: '<path d="M15.5 8.5a4 4 0 1 1-2.6-3.8"/><path d="M14.4 9.6 21 3M18 6l2 2M16.2 7.8l1.6 1.6"/>' },
   bell: { inner: '<path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/>' },
   plus: { inner: '<path d="M12 5v14M5 12h14"/>' },
   edit: { inner: '<path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17v3Z"/><path d="M14.5 7.5l3 3"/>', sw: 1.7 },

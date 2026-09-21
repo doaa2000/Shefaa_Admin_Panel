@@ -1,5 +1,5 @@
 import type { IDoctorsRepository } from '@/domain/repositories/IDoctorsRepository';
-import type { Doctor, DoctorInput } from '@/domain/entities/Doctor';
+import type { DoctorCredentials, Doctor, DoctorInput } from '@/domain/entities/Doctor';
 import type { EntityId } from '@/shared/types';
 import { DoctorStatus } from '@/domain/enums';
 
@@ -29,5 +29,10 @@ export class DoctorsService {
   /** Toggles a doctor between active and inactive. */
   toggleStatus(doctor: Doctor): Promise<Doctor> {
     return this.repo.setStatus(doctor.id, doctor.status !== DoctorStatus.Active);
+  }
+
+  /** Makes this clinic's login, or replaces its password. Shown once. */
+  issueAccount(doctor: Doctor, action: 'create' | 'reset'): Promise<DoctorCredentials> {
+    return this.repo.issueAccount(doctor.id, action);
   }
 }
