@@ -138,6 +138,7 @@ export const en: Record<string, string> = {
   err_email_in_use: 'That address belongs to another account that is not linked to any clinic. Change the address, or link the existing account by hand.',
   err_no_account_yet: 'There is no account yet. Create one first.',
   err_doctor_not_found: 'That doctor no longer exists. Refresh the page.',
+  err_function_unreachable: 'Could not reach the account service. Check that it is deployed: supabase functions deploy doctor-account',
   doctor: 'Doctor',
   specialty: 'Specialty',
   clinic: 'Clinic',

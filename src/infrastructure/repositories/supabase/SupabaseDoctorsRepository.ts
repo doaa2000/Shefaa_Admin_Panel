@@ -96,6 +96,15 @@ export class SupabaseDoctorsRepository implements IDoctorsRepository {
       // reason the function gave is in the response body rather than in the
       // error -- fetched here so the page can say which of the refusals it was.
       let code: string | undefined;
+
+      // A fetch that never completed carries no response to read a reason
+      // from: the function is not deployed, or the browser refused the
+      // preflight. Named here because the library's own wording is about the
+      // request and says nothing about what to do.
+      if (/failed to send a request/i.test(error.message)) {
+        throw new Error('function_unreachable');
+      }
+
       const res = (error as { context?: Response }).context;
       if (res && typeof res.json === 'function') {
         try {

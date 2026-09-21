@@ -138,6 +138,7 @@ export const ar: Record<string, string> = {
   err_email_in_use: 'البريد ده مستخدم في حساب آخر غير مربوط بأي عيادة. غيّري البريد أو اربطي الحساب الموجود يدويًا.',
   err_no_account_yet: 'لا يوجد حساب بعد. أنشئي واحدًا أولًا.',
   err_doctor_not_found: 'الطبيب غير موجود. حدّثي الصفحة.',
+  err_function_unreachable: 'تعذر الوصول إلى خدمة إنشاء الحسابات. تأكدي من نشرها: supabase functions deploy doctor-account',
   doctor: 'الطبيب',
   specialty: 'التخصص',
   clinic: 'العيادة',

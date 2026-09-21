@@ -45,6 +45,7 @@ const credentials = ref<{ doctorName: string; email: string; password: string } 
  */
 const ACCOUNT_ERRORS: Record<string, string> = {
   demo_backend: 'err_demo_backend',
+  function_unreachable: 'err_function_unreachable',
   not_an_admin: 'err_not_an_admin',
   not_signed_in: 'err_not_signed_in',
   doctor_has_no_email: 'err_no_email',
