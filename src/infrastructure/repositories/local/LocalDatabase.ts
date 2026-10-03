@@ -9,6 +9,7 @@ import type { Patient } from '@/domain/entities/Patient';
 import type { Governorate } from '@/domain/entities/Location';
 import type { Appointment } from '@/domain/entities/Appointment';
 import type { Banner } from '@/domain/entities/Banner';
+import type { Campaign } from '@/domain/entities/Campaign';
 import {
   SEED_DOCTORS,
   SEED_SPECIALIZATIONS,
@@ -24,6 +25,7 @@ interface DbShape {
   locations: Governorate[];
   appointments: Appointment[];
   banners: Banner[];
+  campaigns: Campaign[];
 }
 
 const STORE_KEY = 'shefaa.admin.v3';
@@ -37,6 +39,7 @@ function seed(): DbShape {
     appointments: structuredClone(SEED_APPOINTMENTS),
     // Banners are pictures the admin uploads; there is nothing sensible to seed.
     banners: [],
+    campaigns: [],
   };
 }
 

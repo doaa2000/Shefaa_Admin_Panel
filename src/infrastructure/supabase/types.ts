@@ -79,3 +79,20 @@ export interface BannerRow {
   sort_order: number | null;
   is_active: boolean | null;
 }
+
+export interface CampaignRow {
+  id: number;
+  title: string | null;
+  body: string | null;
+  image_url: string | null;
+  governorate_id: number | null;
+  city_id: number | null;
+  venue: string | null;
+  starts_on: string;
+  ends_on: string;
+  start_time: string | null;
+  end_time: string | null;
+  status: string | null;
+  round: number | null;
+  announced_at: string | null;
+}

@@ -14,6 +14,7 @@ import { useSpecializationsStore } from '@/presentation/stores/specializations.s
 import { useAppointmentsStore } from '@/presentation/stores/appointments.store';
 import { usePatientsStore } from '@/presentation/stores/patients.store';
 import { useBannersStore } from '@/presentation/stores/banners.store';
+import { useCampaignsStore } from '@/presentation/stores/campaigns.store';
 import { formatNumber } from '@/shared/utils/format';
 import { isLocalBackend } from '@/shared/utils/backend';
 
@@ -29,6 +30,7 @@ const specs = useSpecializationsStore();
 const appts = useAppointmentsStore();
 const patients = usePatientsStore();
 const banners = useBannersStore();
+const campaigns = useCampaignsStore();
 
 // Preload counts shown in the nav.
 onMounted(() => {
@@ -37,6 +39,7 @@ onMounted(() => {
   appts.fetchAll();
   patients.fetchAll();
   banners.fetchAll();
+  campaigns.fetchAll();
 });
 
 const navGroups = computed(() => [
@@ -53,6 +56,7 @@ const navGroups = computed(() => [
       { id: 'appointments', label: t.value('nav_appointments'), icon: 'appointments', count: appts.items.length },
       { id: 'users', label: t.value('nav_users'), icon: 'users', count: patients.items.length },
       { id: 'banners', label: t.value('nav_banners'), icon: 'image', count: banners.items.length },
+      { id: 'campaigns', label: t.value('nav_campaigns'), icon: 'bell', count: campaigns.items.length },
       { id: 'commission', label: t.value('nav_commission'), icon: 'cash', count: null },
     ],
   },
