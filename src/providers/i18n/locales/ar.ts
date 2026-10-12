@@ -207,6 +207,8 @@ export const ar: Record<string, string> = {
   viewProfile: 'عرض الملف',
   userBlocked: 'تم حظر المستخدم',
   userUnblocked: 'تم إلغاء الحظر',
+  doctorDeactivated: 'تم إيقاف الطبيب: لن يُحجز معه من التطبيق، وحجوزاته الحالية باقية',
+  doctorActivated: 'تم تفعيل الطبيب، ويمكن الحجز معه من جديد',
   profile: 'ملف المريض',
   contact: 'بيانات التواصل',
   activitySummary: 'النشاط',

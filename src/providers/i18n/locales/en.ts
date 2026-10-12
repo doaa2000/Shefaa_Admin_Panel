@@ -207,6 +207,8 @@ export const en: Record<string, string> = {
   viewProfile: 'View profile',
   userBlocked: 'User blocked',
   userUnblocked: 'User unblocked',
+  doctorDeactivated: 'Doctor deactivated: no new bookings from the app, and existing ones stand',
+  doctorActivated: 'Doctor activated, and bookable again',
   profile: 'Patient profile',
   contact: 'Contact',
   activitySummary: 'Activity',
