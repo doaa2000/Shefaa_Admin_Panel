@@ -57,6 +57,7 @@ const navGroups = computed(() => [
       { id: 'users', label: t.value('nav_users'), icon: 'users', count: patients.items.length },
       { id: 'banners', label: t.value('nav_banners'), icon: 'image', count: banners.items.length },
       { id: 'campaigns', label: t.value('nav_campaigns'), icon: 'bell', count: campaigns.items.length },
+      { id: 'reviews', label: t.value('nav_reviews'), icon: 'sparkle', count: null },
       { id: 'commission', label: t.value('nav_commission'), icon: 'cash', count: null },
     ],
   },
