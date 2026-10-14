@@ -103,9 +103,13 @@ async function onSaved(input: DoctorInput, isNew: boolean): Promise<void> {
 }
 
 async function onToggle(d: Doctor): Promise<void> {
+  // Read before the call: the store swaps the row for the updated one.
+  const wasActive = d.status === DoctorStatus.Active;
   try {
     await doctors.toggleStatus(d);
-    toast(d.status === DoctorStatus.Active ? t.value('deactivate') : t.value('activate'));
+    // Deactivating stops new bookings only (migration 0066); saying so here
+    // keeps an admin from expecting the doctor's patients to have been told.
+    toast(wasActive ? t.value('doctorDeactivated') : t.value('doctorActivated'));
   } catch (e) {
     toast((e as Error).message || 'Error', 'danger');
   }

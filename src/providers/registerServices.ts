@@ -19,6 +19,7 @@ import type { IAuthRepository } from '@/domain/repositories/IAuthRepository';
 import type { IBannersRepository } from '@/domain/repositories/IBannersRepository';
 import type { ICampaignsRepository } from '@/domain/repositories/ICampaignsRepository';
 import type { ICommissionRepository } from '@/domain/repositories/ICommissionRepository';
+import type { IReviewsRepository } from '@/domain/repositories/IReviewsRepository';
 
 // Local implementations
 import { LocalDoctorsRepository } from '@/infrastructure/repositories/local/LocalDoctorsRepository';
@@ -31,6 +32,7 @@ import { LocalAuthRepository } from '@/infrastructure/repositories/local/LocalAu
 import { LocalBannersRepository } from '@/infrastructure/repositories/local/LocalBannersRepository';
 import { LocalCampaignsRepository } from '@/infrastructure/repositories/local/LocalCampaignsRepository';
 import { LocalCommissionRepository } from '@/infrastructure/repositories/local/LocalCommissionRepository';
+import { LocalReviewsRepository } from '@/infrastructure/repositories/local/LocalReviewsRepository';
 
 // Supabase implementations
 import { SupabaseDoctorsRepository } from '@/infrastructure/repositories/supabase/SupabaseDoctorsRepository';
@@ -43,6 +45,7 @@ import { SupabaseAuthRepository } from '@/infrastructure/repositories/supabase/S
 import { SupabaseBannersRepository } from '@/infrastructure/repositories/supabase/SupabaseBannersRepository';
 import { SupabaseCampaignsRepository } from '@/infrastructure/repositories/supabase/SupabaseCampaignsRepository';
 import { SupabaseCommissionRepository } from '@/infrastructure/repositories/supabase/SupabaseCommissionRepository';
+import { SupabaseReviewsRepository } from '@/infrastructure/repositories/supabase/SupabaseReviewsRepository';
 
 // Services
 import { DoctorsService } from '@/application/services/DoctorsService';
@@ -55,6 +58,7 @@ import { AuthService } from '@/application/services/AuthService';
 import { BannersService } from '@/application/services/BannersService';
 import { CampaignsService } from '@/application/services/CampaignsService';
 import { CommissionService } from '@/application/services/CommissionService';
+import { ReviewsService } from '@/application/services/ReviewsService';
 
 type Provider = 'local' | 'supabase';
 
@@ -69,6 +73,7 @@ interface RepoBindings {
   banners: () => IBannersRepository;
   campaigns: () => ICampaignsRepository;
   commission: () => ICommissionRepository;
+  reviews: () => IReviewsRepository;
 }
 
 const BINDINGS: Record<Provider, RepoBindings> = {
@@ -83,6 +88,7 @@ const BINDINGS: Record<Provider, RepoBindings> = {
     banners: () => new LocalBannersRepository(),
     campaigns: () => new LocalCampaignsRepository(),
     commission: () => new LocalCommissionRepository(),
+    reviews: () => new LocalReviewsRepository(),
   },
   supabase: {
     doctors: () => new SupabaseDoctorsRepository(),
@@ -95,6 +101,7 @@ const BINDINGS: Record<Provider, RepoBindings> = {
     banners: () => new SupabaseBannersRepository(),
     campaigns: () => new SupabaseCampaignsRepository(),
     commission: () => new SupabaseCommissionRepository(),
+    reviews: () => new SupabaseReviewsRepository(),
   },
 };
 
@@ -115,6 +122,7 @@ export function registerServices(): void {
   container.register(TOKENS.BannersRepository, b.banners);
   container.register(TOKENS.CampaignsRepository, b.campaigns);
   container.register(TOKENS.CommissionRepository, b.commission);
+  container.register(TOKENS.ReviewsRepository, b.reviews);
 
   // --- Bind services (depend only on repository abstractions) ---
   container.register(
@@ -158,5 +166,9 @@ export function registerServices(): void {
   container.register(
     TOKENS.CommissionService,
     (c) => new CommissionService(c.resolve(TOKENS.CommissionRepository)),
+  );
+  container.register(
+    TOKENS.ReviewsService,
+    (c) => new ReviewsService(c.resolve(TOKENS.ReviewsRepository)),
   );
 }
