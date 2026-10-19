@@ -9,9 +9,6 @@ export interface SpecialtyRow {
   name: string;
   icon: string | null;
   name_ar: string | null;
-  description: string | null;
-  color: string | null;
-  base_fee: number | null;
 }
 
 export interface DoctorRow {

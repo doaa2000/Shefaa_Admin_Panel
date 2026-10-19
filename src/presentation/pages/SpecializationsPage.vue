@@ -13,7 +13,7 @@ import SpecializationFormModal from '@/presentation/components/specializations/S
 import { useSpecializations } from '@/presentation/composables/useSpecializations';
 import { useI18n } from '@/presentation/composables/useI18n';
 import { useToast } from '@/presentation/composables/useToast';
-import { formatMoney, formatNumber } from '@/shared/utils/format';
+import { formatNumber } from '@/shared/utils/format';
 import type { Specialization, SpecializationInput } from '@/domain/entities/Specialization';
 
 const { t, locale, pick } = useI18n();
@@ -78,9 +78,7 @@ async function onConfirmDelete(): Promise<void> {
           <thead>
             <tr>
               <th>{{ t('specialization') }}</th>
-              <th>{{ t('description') }}</th>
               <th style="text-align: center">{{ t('doctorsAssigned') }}</th>
-              <th style="text-align: end">{{ t('baseFee') }}</th>
               <th style="text-align: end">{{ t('actions') }}</th>
             </tr>
           </thead>
@@ -88,15 +86,13 @@ async function onConfirmDelete(): Promise<void> {
             <tr v-for="s in specs.filtered.value" :key="s.id">
               <td>
                 <div class="cell-main">
-                  <SpecGlyph :icon="s.icon" :color="s.color" />
+                  <SpecGlyph :icon="s.icon" />
                   <span class="cell-name">{{ pick(s.nameEn, s.nameAr) }}</span>
                 </div>
               </td>
-              <td class="txt-2" style="max-width: 420px">{{ pick(s.descEn, s.descAr) }}</td>
               <td style="text-align: center">
                 <span class="badge info">{{ formatNumber(specs.doctorCount(s.id), locale) }}</span>
               </td>
-              <td class="num fw6" style="text-align: end">{{ formatMoney(s.baseFee, locale) }}</td>
               <td>
                 <div class="row-actions">
                   <ActionButton icon="edit" :title="t('edit')" @click="openEdit(s)" />

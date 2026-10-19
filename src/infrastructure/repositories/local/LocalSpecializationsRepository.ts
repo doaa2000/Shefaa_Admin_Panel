@@ -18,11 +18,7 @@ export class LocalSpecializationsRepository implements ISpecializationsRepositor
       id: input.id ?? 'sp' + Date.now(),
       nameEn: input.nameEn,
       nameAr: input.nameAr || input.nameEn,
-      descEn: input.descEn,
-      descAr: input.descAr || input.descEn,
       icon: input.icon,
-      color: input.color,
-      baseFee: input.baseFee,
     };
     const exists = list.some((s) => s.id === spec.id);
     const next = exists ? list.map((s) => (s.id === spec.id ? spec : s)) : [...list, spec];

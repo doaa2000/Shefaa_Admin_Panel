@@ -25,16 +25,14 @@ export function validateDoctorForm(
 
 export interface SpecializationFormValues {
   nameEn: string;
-  baseFee: string | number;
 }
 
 export function validateSpecializationForm(
   v: SpecializationFormValues,
   requiredMsg: string,
-): ValidationErrors<'nameEn' | 'baseFee'> {
-  const e: ValidationErrors<'nameEn' | 'baseFee'> = {};
+): ValidationErrors<'nameEn'> {
+  const e: ValidationErrors<'nameEn'> = {};
   if (!v.nameEn.trim()) e.nameEn = requiredMsg;
-  if (!v.baseFee) e.baseFee = requiredMsg;
   return e;
 }
 

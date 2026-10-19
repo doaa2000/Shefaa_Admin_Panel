@@ -12,16 +12,16 @@ import { DoctorStatus, PatientStatus, AppointmentStatus } from '@/domain/enums';
 import { colorAt } from '@/shared/utils/color';
 
 export const SEED_SPECIALIZATIONS: Specialization[] = [
-  { id: 'sp1', nameEn: 'Cardiology', nameAr: 'أمراض القلب', descEn: 'Diagnosis and treatment of heart and vascular conditions.', descAr: 'تشخيص وعلاج أمراض القلب والأوعية الدموية.', icon: 'heart', color: '#D6533F', baseFee: 700 },
-  { id: 'sp2', nameEn: 'Dermatology', nameAr: 'الجلدية', descEn: 'Care for skin, hair and nail conditions.', descAr: 'العناية بأمراض الجلد والشعر والأظافر.', icon: 'sparkle', color: '#C98A1E', baseFee: 500 },
-  { id: 'sp3', nameEn: 'Pediatrics', nameAr: 'طب الأطفال', descEn: 'Medical care for infants, children and adolescents.', descAr: 'الرعاية الطبية للرضع والأطفال والمراهقين.', icon: 'baby', color: '#67B2D8', baseFee: 450 },
-  { id: 'sp4', nameEn: 'Orthopedics', nameAr: 'العظام', descEn: 'Bones, joints, ligaments and musculoskeletal care.', descAr: 'رعاية العظام والمفاصل والأربطة والجهاز الحركي.', icon: 'bone', color: '#5A8FB0', baseFee: 550 },
-  { id: 'sp5', nameEn: 'Dentistry', nameAr: 'الأسنان', descEn: 'Oral health, dental treatment and cosmetic dentistry.', descAr: 'صحة الفم وعلاج الأسنان وتجميلها.', icon: 'tooth', color: '#7B6FCB', baseFee: 500 },
-  { id: 'sp6', nameEn: 'Neurology', nameAr: 'المخ والأعصاب', descEn: 'Disorders of the brain, spine and nervous system.', descAr: 'اضطرابات المخ والعمود الفقري والجهاز العصبي.', icon: 'brain', color: '#9B7BC9', baseFee: 650 },
-  { id: 'sp7', nameEn: 'Gynecology', nameAr: 'النساء والتوليد', descEn: "Women's reproductive health and pregnancy care.", descAr: 'صحة المرأة الإنجابية ورعاية الحمل.', icon: 'heart', color: '#D67BA0', baseFee: 600 },
-  { id: 'sp8', nameEn: 'Ophthalmology', nameAr: 'العيون', descEn: 'Eye examinations, vision and surgical eye care.', descAr: 'فحص العيون والنظر والجراحة.', icon: 'eye', color: '#4A93BC', baseFee: 500 },
-  { id: 'sp9', nameEn: 'ENT', nameAr: 'الأنف والأذن والحنجرة', descEn: 'Ear, nose and throat diagnosis and treatment.', descAr: 'تشخيص وعلاج الأنف والأذن والحنجرة.', icon: 'ear', color: '#2E9E73', baseFee: 450 },
-  { id: 'sp10', nameEn: 'Psychiatry', nameAr: 'الطب النفسي', descEn: 'Mental health assessment and therapy.', descAr: 'تقييم الصحة النفسية والعلاج النفسي.', icon: 'brain', color: '#6B7785', baseFee: 600 },
+  { id: 'sp1', nameEn: 'Cardiology', nameAr: 'أمراض القلب', icon: 'heart' },
+  { id: 'sp2', nameEn: 'Dermatology', nameAr: 'الجلدية', icon: 'sparkle' },
+  { id: 'sp3', nameEn: 'Pediatrics', nameAr: 'طب الأطفال', icon: 'baby' },
+  { id: 'sp4', nameEn: 'Orthopedics', nameAr: 'العظام', icon: 'bone' },
+  { id: 'sp5', nameEn: 'Dentistry', nameAr: 'الأسنان', icon: 'tooth' },
+  { id: 'sp6', nameEn: 'Neurology', nameAr: 'المخ والأعصاب', icon: 'brain' },
+  { id: 'sp7', nameEn: 'Gynecology', nameAr: 'النساء والتوليد', icon: 'heart' },
+  { id: 'sp8', nameEn: 'Ophthalmology', nameAr: 'العيون', icon: 'eye' },
+  { id: 'sp9', nameEn: 'ENT', nameAr: 'الأنف والأذن والحنجرة', icon: 'ear' },
+  { id: 'sp10', nameEn: 'Psychiatry', nameAr: 'الطب النفسي', icon: 'brain' },
 ];
 
 export const SEED_LOCATIONS: Governorate[] = [

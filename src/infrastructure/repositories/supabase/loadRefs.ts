@@ -14,7 +14,7 @@ import type {
  */
 export async function loadRefMaps(db: SupabaseClient): Promise<RefMaps> {
   const [specs, clinics, cities, govs] = await Promise.all([
-    db.from('specialties').select('id, name, name_ar, icon, color, base_fee, description'),
+    db.from('specialties').select('id, name, name_ar, icon'),
     db.from('Clinics').select('id, name, address, city_id'),
     db.from('Cities').select('id, name, governorate_id'),
     db.from('Governorates').select('id, name'),
