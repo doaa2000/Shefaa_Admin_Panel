@@ -3,7 +3,7 @@ import type { ClinicInput, Governorate, LocationChain } from '@/domain/entities/
 import { LocationLevel } from '@/domain/enums';
 import type { EntityId } from '@/shared/types';
 import { getSupabaseClient } from '@/infrastructure/supabase/client';
-import { buildLocationTree, clinicLocationText } from '@/infrastructure/mappers/location.mapper';
+import { buildLocationTree } from '@/infrastructure/mappers/location.mapper';
 import type { GovernorateRow, CityRow, ClinicRow } from '@/infrastructure/supabase/types';
 import { describeWriteError } from './writeGuards';
 
@@ -77,36 +77,6 @@ export class SupabaseClinicsRepository implements IClinicsRepository {
     if (error) throw await describeWriteError(error, this.db);
 
     const clinicId = String((data as { id: number }).id);
-    const tree = await this.listTree();
-    if (input.id) await this.refreshDoctorLocations(tree, clinicId);
-    return { tree, clinicId };
-  }
-
-  /**
-   * Keeps `Doctors.location` in step with a clinic that changed.
-   *
-   * That column is a copy -- it is what the patient app prints, and the app
-   * does not read Clinics -- so a new address would otherwise reach the app
-   * only when each doctor at the clinic happened to be saved again.
-   */
-  private async refreshDoctorLocations(tree: Governorate[], clinicId: EntityId): Promise<void> {
-    for (const g of tree) {
-      for (const c of g.cities) {
-        const cl = c.clinics.find((x) => x.id === clinicId);
-        if (!cl) continue;
-        const location = clinicLocationText({
-          clinic: cl.nameEn,
-          address: cl.address,
-          city: c.nameEn,
-          governorate: g.nameEn,
-        });
-        const { error } = await this.db
-          .from('Doctors')
-          .update({ location })
-          .eq('clinic_id', Number(clinicId));
-        if (error) throw await describeWriteError(error, this.db);
-        return;
-      }
-    }
+    return { tree: await this.listTree(), clinicId };
   }
 }
