@@ -12,6 +12,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
  * from the outside: the signed-in account is not in `public.admins`, or there
  * is no signed-in account at all and the request went out anonymously. So the
  * message says which, by asking who is signed in at the moment it fails.
+ *
+ * Signing in now refuses an account that is not an administrator, so the first
+ * case should only be met by an account taken out of `admins` while its session
+ * was open. The check stays because the login is the panel's word and these
+ * policies are the database's; the database is the one that counts.
  */
 
 /** Who the panel is acting as, for a message. Never throws. */
