@@ -152,6 +152,7 @@ export function registerServices(): void {
         c.resolve(TOKENS.DashboardRepository),
         c.resolve(TOKENS.AppointmentsRepository),
         c.resolve(TOKENS.DoctorsRepository),
+        c.resolve(TOKENS.CommissionRepository),
       ),
   );
   container.register(TOKENS.AuthService, (c) => new AuthService(c.resolve(TOKENS.AuthRepository)));

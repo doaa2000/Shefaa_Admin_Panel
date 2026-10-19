@@ -100,9 +100,8 @@ export const ar: Record<string, string> = {
   loading: 'جارٍ التحميل…',
   logout: 'تسجيل الخروج',
 
-  stat_bookings: 'إجمالي الحجوزات',
+  stat_bookings: 'حجوزات التطبيق',
   stat_doctors: 'الأطباء النشطون',
-  stat_revenue: 'إجمالي الإيرادات',
   stat_patients: 'إجمالي المرضى',
   vsLast: 'عن الشهر الماضي',
 
@@ -341,4 +340,6 @@ export const ar: Record<string, string> = {
   filterOrigin: 'المصدر',
   origin_app: 'تطبيق',
   origin_clinic: 'عيادة',
+  stat_clinic_bookings: 'حجز سجّلته العيادات بنفسها',
+  stat_commission: 'العمولة المستحقة',
 };

@@ -18,6 +18,7 @@ import {
   formatDateShort,
   formatTime,
 } from '@/shared/utils/format';
+import { monthOverMonth } from '@/shared/utils/months';
 
 const { t, locale, pick } = useI18n();
 const dash = useDashboard();
@@ -32,6 +33,8 @@ interface Card {
   key: string;
   label: string;
   value: string;
+  /** A second, smaller figure under the label. */
+  note?: string;
   /** Null when the figure is not compared against anything. */
   trend: number | null;
   icon: string;
@@ -43,19 +46,51 @@ const cards = computed<Card[]>(() => {
   const s = dash.stats.value;
   if (!s) return [];
   return [
-    { key: 'bookings', label: t.value('stat_bookings'), value: formatNumber(s.bookings.value, locale.value), trend: s.bookings.trend, icon: 'calendar', bg: 'var(--accent-soft)', fg: 'var(--accent-deep)' },
+    // The app's bookings only. The clinics' own telephone bookings are real
+    // visits but not the platform's doing, so they are a figure of their own
+    // underneath rather than part of this one.
+    {
+      key: 'bookings',
+      label: t.value('stat_bookings'),
+      value: formatNumber(s.bookings.value, locale.value),
+      note: `${formatNumber(s.clinicBookings, locale.value)} ${t.value('stat_clinic_bookings')}`,
+      trend: s.bookings.trend,
+      icon: 'calendar',
+      bg: 'var(--accent-soft)',
+      fg: 'var(--accent-deep)',
+    },
     // No trend for this one: admin_dashboard_stats returns a literal zero
     // rather than a comparison, and "▲ 0% vs last month" is a measurement
     // that was never taken.
     { key: 'doctors', label: t.value('stat_doctors'), value: formatNumber(dash.activeDoctors.value, locale.value), trend: null, icon: 'stethoscope', bg: 'var(--purple-soft)', fg: 'var(--purple)' },
-    { key: 'revenue', label: t.value('stat_revenue'), value: formatMoney(s.revenue.value, locale.value), trend: s.revenue.trend, icon: 'cash', bg: 'var(--ok-soft)', fg: 'var(--ok)' },
+    // The platform's share rather than the takings. "Revenue" summed every
+    // paid fee, the clinics' own telephone patients included, and so claimed
+    // money the platform never had a part in. A dash when the statement could
+    // not be read: a zero there would be a figure.
+    {
+      key: 'commission',
+      label: t.value('stat_commission'),
+      value: dash.commission.value ? formatMoney(dash.commission.value.value, locale.value) : '—',
+      trend: dash.commission.value?.trend ?? null,
+      icon: 'cash',
+      bg: 'var(--ok-soft)',
+      fg: 'var(--ok)',
+    },
     { key: 'patients', label: t.value('stat_patients'), value: formatNumber(s.patients.value, locale.value), trend: s.patients.trend, icon: 'heart', bg: 'var(--warn-soft)', fg: 'var(--warn)' },
   ];
 });
 
-/** The bars' own month-over-month, in the colour of its direction. */
+/**
+ * The bars' own month-over-month, in the colour of its direction.
+ *
+ * Read off the last two bars rather than the bookings card: the bars count
+ * every booking, the clinics' own included, and the card now counts only the
+ * app's, so the card's trend is no longer about this chart.
+ */
 const trendBadge = computed(() => {
-  const t0 = dash.stats.value?.bookings.trend ?? 0;
+  const values = dash.stats.value?.trend.values ?? [];
+  const t0 =
+    values.length >= 2 ? monthOverMonth(values[values.length - 1], values[values.length - 2]) : 0;
   const sign = t0 > 0 ? '+' : '';
   return {
     tone: t0 > 0 ? 'ok' : t0 < 0 ? 'danger' : 'neutral',
@@ -81,6 +116,7 @@ const donutValue = computed(
         </div>
         <div class="stat-val">{{ card.value }}</div>
         <div class="stat-label">{{ card.label }}</div>
+        <div v-if="card.note" class="stat-note">{{ card.note }}</div>
         <div v-if="card.trend !== null" class="stat-trend" :class="card.trend >= 0 ? 'up' : 'down'">
           <AppIcon :name="card.trend >= 0 ? 'arrowUp' : 'arrowDn'" :size="13" />
           {{ formatPercent(card.trend, locale) }}%

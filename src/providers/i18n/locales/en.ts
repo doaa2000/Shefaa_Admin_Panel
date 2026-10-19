@@ -100,9 +100,8 @@ export const en: Record<string, string> = {
   loading: 'Loading…',
   logout: 'Log out',
 
-  stat_bookings: 'Total Bookings',
+  stat_bookings: 'App Bookings',
   stat_doctors: 'Active Doctors',
-  stat_revenue: 'Total Revenue',
   stat_patients: 'Total Patients',
   vsLast: 'vs last month',
 
@@ -341,4 +340,6 @@ export const en: Record<string, string> = {
   filterOrigin: 'Source',
   origin_app: 'App',
   origin_clinic: 'Clinic',
+  stat_clinic_bookings: 'entered by clinics',
+  stat_commission: 'Commission due',
 };

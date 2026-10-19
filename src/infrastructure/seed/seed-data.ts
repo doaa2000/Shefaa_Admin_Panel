@@ -241,6 +241,7 @@ export const SEED_APPOINTMENTS: Appointment[] = buildAppointments();
 
 export const SEED_DASHBOARD: DashboardStats = {
   bookings: { value: 1437, trend: 12.4 },
+  clinicBookings: 212,
   doctors: { value: 12, trend: 4.2 },
   revenue: { value: 684500, trend: 18.7 },
   patients: { value: 3219, trend: 6.1 },
