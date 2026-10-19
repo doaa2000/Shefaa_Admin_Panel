@@ -183,6 +183,12 @@ const APPT_STATUSES = [
   AppointmentStatus.Cancelled,
 ];
 
+const WALK_IN_NAMES = [
+  { en: 'Hassan Abdelrahman', ar: 'حسن عبد الرحمن' },
+  { en: 'Samia Fathy', ar: 'سامية فتحي' },
+  { en: 'Mahmoud Ragab', ar: 'محمود رجب' },
+];
+
 function buildAppointments(): Appointment[] {
   const out: Appointment[] = [];
   const today = new Date('2026-06-09T09:00:00');
@@ -203,10 +209,13 @@ function buildAppointments(): Appointment[] {
             AppointmentStatus.Confirmed,
           ][i]
         : APPT_STATUSES[(i + 1) % 4];
+    // Every fifth one taken by the clinic over the telephone, for somebody
+    // with no account: the name is whatever the receptionist wrote down.
+    const byClinic = i % 5 === 4;
     out.push({
       id: 'a' + (i + 1),
-      patientEn: pat.nameEn,
-      patientAr: pat.nameAr,
+      patientEn: byClinic ? WALK_IN_NAMES[i % WALK_IN_NAMES.length].en : pat.nameEn,
+      patientAr: byClinic ? WALK_IN_NAMES[i % WALK_IN_NAMES.length].ar : pat.nameAr,
       patientColor: pat.color,
       doctorEn: doc.nameEn,
       doctorAr: doc.nameAr,
@@ -222,6 +231,7 @@ function buildAppointments(): Appointment[] {
       datetime: d.toISOString(),
       price: doc.fee,
       status,
+      origin: byClinic ? 'clinic' : 'app',
     });
   }
   return out;

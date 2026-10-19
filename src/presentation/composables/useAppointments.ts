@@ -12,7 +12,13 @@ export function useAppointments() {
   const { locale } = useI18n();
   const service = container.resolve(TOKENS.AppointmentsService);
 
-  const filters = reactive<AppointmentFilters>({ search: '', city: '', doctor: '', status: '' });
+  const filters = reactive<AppointmentFilters>({
+    search: '',
+    city: '',
+    doctor: '',
+    status: '',
+    origin: '',
+  });
 
   const filtered = computed(() => service.applyFilters(items.value, filters));
   const cities = computed(() => service.distinctCities(items.value));
@@ -20,7 +26,7 @@ export function useAppointments() {
   const counts = computed(() => service.countByStatus(filtered.value));
 
   const hasFilter = computed(
-    () => !!(filters.search || filters.city || filters.doctor || filters.status),
+    () => !!(filters.search || filters.city || filters.doctor || filters.status || filters.origin),
   );
 
   function clear(): void {
@@ -28,6 +34,7 @@ export function useAppointments() {
     filters.city = '';
     filters.doctor = '';
     filters.status = '';
+    filters.origin = '';
   }
 
   /** Label for a city filter value, resolved for the active language. */

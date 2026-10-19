@@ -7,6 +7,8 @@ export interface AppointmentFilters {
   city: string;
   doctor: string;
   status: string;
+  /** '', 'app' or 'clinic'. */
+  origin: string;
 }
 
 export class AppointmentsService {
@@ -39,7 +41,8 @@ export class AppointmentsService {
           matchQ &&
           (!f.city || a.cityEn === f.city) &&
           (!f.doctor || a.doctorEn === f.doctor) &&
-          (!f.status || a.status === f.status)
+          (!f.status || a.status === f.status) &&
+          (!f.origin || a.origin === f.origin)
         );
       })
       .sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime());
@@ -57,7 +60,7 @@ export class AppointmentsService {
 
   /** Builds a CSV export of the supplied appointments. */
   toCsv(appts: Appointment[]): string {
-    const header = ['Patient', 'Doctor', 'Specialization', 'City', 'DateTime', 'Price', 'Status'];
+    const header = ['Patient', 'Doctor', 'Specialization', 'City', 'DateTime', 'Price', 'Status', 'Source'];
     const rows = appts.map((a) => [
       a.patientEn,
       a.doctorEn,
@@ -66,6 +69,7 @@ export class AppointmentsService {
       a.datetime,
       String(a.price),
       a.status,
+      a.origin,
     ]);
     return [header, ...rows]
       .map((cols) => cols.map((c) => `"${c.replace(/"/g, '""')}"`).join(','))

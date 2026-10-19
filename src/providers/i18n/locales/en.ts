@@ -337,4 +337,8 @@ export const en: Record<string, string> = {
   campaignDeliveryReasonNoDevice: 'No phone registered for notifications',
   campaignDeliveryReasonFailed: 'The phone refused the notification',
   campaignDeliveryTruncated: 'Only the first 200 are shown.',
+  origin: 'Source',
+  filterOrigin: 'Source',
+  origin_app: 'App',
+  origin_clinic: 'Clinic',
 };

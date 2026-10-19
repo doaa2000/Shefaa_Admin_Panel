@@ -37,10 +37,15 @@ export function toAppointment(row: BookingRow, refs: BookingRefs, index = 0): Ap
     ? `${row.booked_date}T${row.start_time ?? '00:00:00'}`
     : new Date().toISOString();
 
+  // The account's name first, then whatever the clinic wrote down -- the
+  // order doctor_payments uses. A telephone booking has no account, and
+  // listing it as "—" leaves the admin unable to say who it was for.
+  const patientName = patient?.name || row.walk_in_name?.trim() || '—';
+
   return {
     id: String(row.id),
-    patientEn: patient?.name ?? '—',
-    patientAr: patient?.name ?? '—',
+    patientEn: patientName,
+    patientAr: patientName,
     patientColor: colorAt(index + 2),
     doctorEn: doc?.name ?? '—',
     doctorAr: doc?.name ?? '—',
@@ -56,5 +61,6 @@ export function toAppointment(row: BookingRow, refs: BookingRefs, index = 0): Ap
     datetime,
     price: payment?.amount ?? doc?.consultation_fee ?? 0,
     status: STATUS[(row.status ?? '').toLowerCase()] ?? AppointmentStatus.Pending,
+    origin: row.origin === 'clinic' ? 'clinic' : 'app',
   };
 }

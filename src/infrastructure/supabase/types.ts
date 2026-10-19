@@ -60,6 +60,12 @@ export interface BookingRow {
   booked_date: string | null;
   start_time: string | null;
   status: string | null;
+  /** 0061. Absent from a database older than that, where every booking was
+   *  the app's. */
+  origin?: string | null;
+  /** Who a clinic booking is for, when it is nobody with an account. */
+  walk_in_name?: string | null;
+  walk_in_phone?: string | null;
 }
 
 export interface PaymentRow {

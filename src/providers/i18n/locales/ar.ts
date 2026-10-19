@@ -337,4 +337,8 @@ export const ar: Record<string, string> = {
   campaignDeliveryReasonNoDevice: 'لا يوجد هاتف مسجّل للإشعارات',
   campaignDeliveryReasonFailed: 'رفض الهاتف الإشعار',
   campaignDeliveryTruncated: 'تظهر أول 200 فقط.',
+  origin: 'المصدر',
+  filterOrigin: 'المصدر',
+  origin_app: 'تطبيق',
+  origin_clinic: 'عيادة',
 };
