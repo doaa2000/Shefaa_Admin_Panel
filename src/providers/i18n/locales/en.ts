@@ -282,7 +282,7 @@ export const en: Record<string, string> = {
   campaignBodyHint: 'Which specialties, whether it is free, what to bring. Shown in the app when the announcement is tapped.',
   campaignBodyRequired: 'Enter the details',
   campaignGovernorate: 'Governorate',
-  campaignGovernorateHint: 'Patients with bookings in this governorate are notified. Leave empty to notify everyone.',
+  campaignGovernorateHint: 'Patients who picked a city in this governorate in the app are notified, or only this city if you choose one. Those who have not picked a city yet are reached by where they have booked. Leave empty to notify everyone.',
   campaignNationwide: 'All governorates',
   campaignCity: 'City',
   campaignWholeGovernorate: 'Anywhere in the governorate',
@@ -321,4 +321,7 @@ export const en: Record<string, string> = {
   campaignAnnounced_toast: 'Announcement sent',
   campaignAddressed: 'patients',
   campaignNobodyNew: 'Nothing new was sent: these patients already had this announcement.',
+  campaignNobodyTargetedCity: 'Nothing was sent: this convoy has nobody to reach, because nobody has picked this city in the app.',
+  campaignNobodyTargetedGovernorate: 'Nothing was sent: this convoy has nobody to reach, because nobody has picked a city in this governorate in the app.',
+  campaignNobodyTargetedAnywhere: 'Nothing was sent: this convoy has nobody to reach, because there are no patient accounts yet.',
 };

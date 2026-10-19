@@ -52,7 +52,7 @@ export class LocalCampaignsRepository implements ICampaignsRepository {
       announcedAt: new Date().toISOString(),
     };
     localDb.write('campaigns', list.map((c) => (c.id === id ? updated : c)));
-    return delay({ status, round: updated.round, addressed: 0 });
+    return delay({ status, round: updated.round, addressed: 0, audience: null });
   }
 
   /** No storage without a backend, so the picture is kept inline in the row. */

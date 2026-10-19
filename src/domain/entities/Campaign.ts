@@ -21,8 +21,9 @@ export interface Campaign {
 
   /** Empty means national: everyone with an account is told. */
   governorateId: EntityId | '';
-  /** Narrower still, within that governorate. The audience is still read from
-   *  the governorate, so a neighbouring city can still come. */
+  /** Narrower still, within that governorate. Only the people who picked this
+   *  city in the app are told (0070), and those who have not picked one yet
+   *  but have booked there. */
   cityId: EntityId | '';
   /** The address in words. A governorate is not somewhere anybody can go to. */
   venue: string;
@@ -56,4 +57,11 @@ export interface AnnounceResult {
    * the page says rather than claiming a second announcement.
    */
   addressed: number;
+  /**
+   * How many people the convoy is for at all, told before or not. With
+   * `addressed` at zero it is what separates "nobody to tell" from "everybody
+   * was told already". Null from a database without 0070, which does not
+   * report it.
+   */
+  audience: number | null;
 }

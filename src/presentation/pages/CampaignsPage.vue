@@ -57,13 +57,28 @@ async function onConfirmAnnounce(): Promise<void> {
   announceTarget.value = null;
   try {
     const result = await campaigns.announce(target.id);
-    // Three outcomes, and the admin is told which. "Sent" when nobody was sent
-    // anything is how a page teaches somebody to trust a button that lies.
+    // The outcomes, and the admin is told which. "Sent" when nobody was sent
+    // anything is how a page teaches somebody to trust a button that lies --
+    // and so is "they already had it" said of a city where nobody had anything,
+    // which sends the admin looking for a notification that never existed.
     if (result.addressed > 0) {
       toast(
         `${t.value('campaignAnnounced_toast')} — ${formatNumber(result.addressed, locale.value)} ${t.value('campaignAddressed')}`,
       );
+    } else if (result.audience === 0) {
+      toast(
+        t.value(
+          target.cityId !== ''
+            ? 'campaignNobodyTargetedCity'
+            : target.governorateId !== ''
+              ? 'campaignNobodyTargetedGovernorate'
+              : 'campaignNobodyTargetedAnywhere',
+        ),
+        'info',
+      );
     } else {
+      // A positive audience, or none reported by a database without 0070,
+      // which is what this said before it could tell the two apart.
       toast(t.value('campaignNobodyNew'), 'info');
     }
   } catch (e) {

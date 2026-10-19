@@ -282,7 +282,7 @@ export const ar: Record<string, string> = {
   campaignBodyHint: 'التخصصات، وهل الكشف مجاني، وما يحتاج المريض أن يأتي به. يظهر داخل التطبيق عند الضغط على الإعلان.',
   campaignBodyRequired: 'اكتب تفاصيل القافلة',
   campaignGovernorate: 'المحافظة',
-  campaignGovernorateHint: 'يصل الإشعار للمرضى الذين لهم حجوزات في هذه المحافظة. اتركها فارغة ليصل الجميع.',
+  campaignGovernorateHint: 'يصل الإشعار للمرضى الذين اختاروا في التطبيق مدينة في هذه المحافظة، أو هذه المدينة إن حددتها. ومن لم يختر مدينة بعد يصله حسب المكان الذي حجز فيه. اتركها فارغة ليصل الجميع.',
   campaignNationwide: 'كل المحافظات',
   campaignCity: 'المدينة',
   campaignWholeGovernorate: 'كل مدن المحافظة',
@@ -321,4 +321,7 @@ export const ar: Record<string, string> = {
   campaignAnnounced_toast: 'تم إرسال الإعلان',
   campaignAddressed: 'مريض',
   campaignNobodyNew: 'لم يُرسل شيء جديد: هؤلاء المرضى وصلهم هذا الإعلان بالفعل.',
+  campaignNobodyTargetedCity: 'لم يُرسل شيء: لا يوجد مستهدفون لهذه القافلة، فلم يختر أحد هذه المدينة في التطبيق.',
+  campaignNobodyTargetedGovernorate: 'لم يُرسل شيء: لا يوجد مستهدفون لهذه القافلة، فلم يختر أحد مدينة في هذه المحافظة في التطبيق.',
+  campaignNobodyTargetedAnywhere: 'لم يُرسل شيء: لا يوجد مستهدفون لهذه القافلة، فلا يوجد حساب مريض في التطبيق بعد.',
 };

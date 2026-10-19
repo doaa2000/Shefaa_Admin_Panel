@@ -77,6 +77,9 @@ export class SupabaseCampaignsRepository implements ICampaignsRepository {
       status: (row.status as CampaignStatus) ?? 'announced',
       round: Number(row.round ?? 0),
       addressed: Number(row.addressed ?? 0),
+      // Absent rather than zero before 0070: a zero here would tell the admin
+      // that nobody lives in the city, which was never measured.
+      audience: row.audience == null ? null : Number(row.audience),
     };
   }
 
