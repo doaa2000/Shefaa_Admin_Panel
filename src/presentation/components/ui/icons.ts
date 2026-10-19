@@ -26,6 +26,8 @@ export const ICONS: Record<string, IconDef> = {
   edit: { inner: '<path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17v3Z"/><path d="M14.5 7.5l3 3"/>', sw: 1.7 },
   trash: { inner: '<path d="M4 7h16M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2M6 7l1 12.5A1.5 1.5 0 0 0 8.5 21h7a1.5 1.5 0 0 0 1.5-1.5L18 7"/>', sw: 1.7 },
   power: { inner: '<path d="M12 4v8M7.5 7a7 7 0 1 0 9 0"/>' },
+  // Two arrows chasing each other round: read it again.
+  refresh: { inner: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 20v-4h-4"/>' },
   check: { inner: '<path d="m5 12.5 4.5 4.5L19 7"/>' },
   x: { inner: '<path d="M6 6l12 12M18 6 6 18"/>' },
   chevR: { inner: '<path d="m9 6 6 6-6 6"/>' },

@@ -1,5 +1,10 @@
 import type { ICampaignsRepository } from '@/domain/repositories/ICampaignsRepository';
-import type { AnnounceResult, Campaign, CampaignInput } from '@/domain/entities/Campaign';
+import type {
+  AnnounceResult,
+  Campaign,
+  CampaignDelivery,
+  CampaignInput,
+} from '@/domain/entities/Campaign';
 import type { EntityId } from '@/shared/types';
 import { localDb, delay } from './LocalDatabase';
 
@@ -53,6 +58,39 @@ export class LocalCampaignsRepository implements ICampaignsRepository {
     };
     localDb.write('campaigns', list.map((c) => (c.id === id ? updated : c)));
     return delay({ status, round: updated.round, addressed: 0, audience: null });
+  }
+
+  /**
+   * A made-up breakdown, so the delivery line can be looked at without a
+   * backend. Shaped like a real one -- most of the people missed have no phone
+   * registered, a few phones refused -- and drawn from the demo patients, so
+   * the names in the list are names the rest of the demo shows.
+   *
+   * Nothing for a convoy that was never announced, which is what the server
+   * would say too.
+   */
+  async delivery(id: EntityId): Promise<CampaignDelivery | null> {
+    const campaign = localDb.read('campaigns').find((c) => c.id === id);
+    if (!campaign || campaign.round === 0) {
+      return delay({ told: 0, delivered: 0, noDevice: 0, failed: 0, pending: 0, missed: [] });
+    }
+    const patients = localDb.read('patients');
+    const missed = patients.slice(0, 4).map((p, i) => ({
+      userId: String(p.id),
+      name: p.nameAr || p.nameEn,
+      phone: p.phone,
+      reason: i === 3 ? ('failed' as const) : ('no_device' as const),
+    }));
+    const pending = 1;
+    const told = Math.max(patients.length, missed.length + pending) * 4;
+    return delay({
+      told,
+      delivered: told - missed.length - pending,
+      noDevice: missed.filter((m) => m.reason === 'no_device').length,
+      failed: missed.filter((m) => m.reason === 'failed').length,
+      pending,
+      missed,
+    });
   }
 
   /** No storage without a backend, so the picture is kept inline in the row. */

@@ -8,6 +8,7 @@ import LoadingState from '@/presentation/components/ui/LoadingState.vue';
 import ErrorState from '@/presentation/components/ui/ErrorState.vue';
 import ConfirmDialog from '@/presentation/components/ui/ConfirmDialog.vue';
 import CampaignFormModal from '@/presentation/components/campaigns/CampaignFormModal.vue';
+import CampaignDeliveryPanel from '@/presentation/components/campaigns/CampaignDeliveryPanel.vue';
 import { useCampaigns } from '@/presentation/composables/useCampaigns';
 import { useI18n } from '@/presentation/composables/useI18n';
 import { useToast } from '@/presentation/composables/useToast';
@@ -197,6 +198,10 @@ function hours(c: Campaign): string {
               </dd>
             </div>
           </dl>
+
+          <!-- Only once something went out: before that there is nobody for
+               it to have reached. -->
+          <CampaignDeliveryPanel v-if="c.round > 0" :campaign="c" />
 
           <div class="campaign-bar">
             <BaseButton

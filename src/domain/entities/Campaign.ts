@@ -65,3 +65,37 @@ export interface AnnounceResult {
    */
   audience: number | null;
 }
+
+/** Why somebody a convoy was announced to did not get the notification. */
+export type MissedReason = 'no_device' | 'failed';
+
+export interface MissedPerson {
+  userId: string;
+  /** Empty when the account never gave one. */
+  name: string;
+  phone: string;
+  reason: MissedReason;
+}
+
+/**
+ * Who an announced convoy reached, counted by `campaign_delivery` (0070).
+ *
+ * Everybody a notification was written for across every announcement of the
+ * convoy, each counted once, by their latest one. `told` is the sum of the
+ * other four.
+ */
+export interface CampaignDelivery {
+  told: number;
+  /** At least one of their phones received it. */
+  delivered: number;
+  /** No phone registered for notifications: it is in their list in the app,
+   *  and nothing buzzed. Most of the people missed are these. */
+  noDevice: number;
+  /** Their phones refused it, after the sender's retries. */
+  failed: number;
+  /** Not sent yet. The sender runs once a minute, so this is a wait, not a
+   *  fault. */
+  pending: number;
+  /** The no-device and failed people by name, capped at 200 by the server. */
+  missed: MissedPerson[];
+}

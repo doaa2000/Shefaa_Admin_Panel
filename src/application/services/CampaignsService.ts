@@ -1,5 +1,10 @@
 import type { ICampaignsRepository } from '@/domain/repositories/ICampaignsRepository';
-import type { AnnounceResult, Campaign, CampaignInput } from '@/domain/entities/Campaign';
+import type {
+  AnnounceResult,
+  Campaign,
+  CampaignDelivery,
+  CampaignInput,
+} from '@/domain/entities/Campaign';
 import type { EntityId } from '@/shared/types';
 
 export class CampaignsService {
@@ -19,6 +24,10 @@ export class CampaignsService {
 
   announce(id: EntityId): Promise<AnnounceResult> {
     return this.repo.announce(id);
+  }
+
+  delivery(id: EntityId): Promise<CampaignDelivery | null> {
+    return this.repo.delivery(id);
   }
 
   uploadImage(file: File): Promise<string> {
