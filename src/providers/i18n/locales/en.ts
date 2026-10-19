@@ -167,6 +167,13 @@ export const en: Record<string, string> = {
   doctorUpdated: 'Doctor updated',
   doctorDeleted: 'Doctor deleted',
   assignedClinic: 'Assigned clinic',
+  clinicExisting: 'Existing clinic',
+  clinicNew: 'New clinic',
+  selectGov: 'Select governorate',
+  clinicAddress: 'Clinic address',
+  clinicAddressHint: 'Street, building, floor, a landmark. Patients see it on the doctor\'s page with the clinic name, city and governorate.',
+  noCitiesYet: 'This governorate has no cities yet. Add one on the Locations page.',
+  noClinicsYet: 'No clinics yet. Add a new one here.',
 
   addSpecialization: 'Add specialization',
   editSpecialization: 'Edit specialization',

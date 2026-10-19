@@ -4,36 +4,31 @@ import type { EntityId } from '@/shared/types';
 import { DoctorStatus } from '@/domain/enums';
 import { colorAt } from '@/shared/utils/color';
 import { localDb, delay } from './LocalDatabase';
-import {
-  SEED_SPECIALIZATIONS,
-  SEED_LOCATIONS,
-  clinicNameEn,
-  clinicNameAr,
-} from '@/infrastructure/seed/seed-data';
 
-/** Resolves clinic → city/governorate context from the location tree. */
+/**
+ * Resolves clinic → city/governorate context from the location tree.
+ *
+ * Read from the stored tree, not the seed: a clinic made from the doctor form
+ * a moment ago is only there.
+ */
 function clinicContext(clinicId: EntityId) {
-  for (const g of SEED_LOCATIONS) {
+  for (const g of localDb.read('locations')) {
     for (const c of g.cities) {
       for (const cl of c.clinics) {
         if (cl.id === clinicId) {
-          return { cityEn: c.nameEn, cityAr: c.nameAr, govEn: g.nameEn, govAr: g.nameAr };
+          return {
+            clinicEn: cl.nameEn,
+            clinicAr: cl.nameAr,
+            cityEn: c.nameEn,
+            cityAr: c.nameAr,
+            govEn: g.nameEn,
+            govAr: g.nameAr,
+          };
         }
       }
     }
   }
-  // also search dynamically created locations
-  const live = localDb.read('locations');
-  for (const g of live) {
-    for (const c of g.cities) {
-      for (const cl of c.clinics) {
-        if (cl.id === clinicId) {
-          return { cityEn: c.nameEn, cityAr: c.nameAr, govEn: g.nameEn, govAr: g.nameAr };
-        }
-      }
-    }
-  }
-  return { cityEn: '', cityAr: '', govEn: '', govAr: '' };
+  return { clinicEn: '', clinicAr: '', cityEn: '', cityAr: '', govEn: '', govAr: '' };
 }
 
 export class LocalDoctorsRepository implements IDoctorsRepository {
@@ -47,7 +42,7 @@ export class LocalDoctorsRepository implements IDoctorsRepository {
 
   async save(input: DoctorInput): Promise<Doctor> {
     const doctors = localDb.read('doctors');
-    const sp = SEED_SPECIALIZATIONS.find((s) => s.id === input.specializationId);
+    const sp = localDb.read('specializations').find((s) => s.id === input.specializationId);
     const ctx = clinicContext(input.clinicId);
     const existing = doctors.find((d) => d.id === input.id);
 
@@ -69,8 +64,8 @@ export class LocalDoctorsRepository implements IDoctorsRepository {
       specialtyEn: sp?.nameEn ?? '',
       specialtyAr: sp?.nameAr ?? '',
       clinicId: input.clinicId,
-      clinicEn: clinicNameEn(input.clinicId),
-      clinicAr: clinicNameAr(input.clinicId),
+      clinicEn: ctx.clinicEn,
+      clinicAr: ctx.clinicAr,
       cityEn: ctx.cityEn,
       cityAr: ctx.cityAr,
       govEn: ctx.govEn,

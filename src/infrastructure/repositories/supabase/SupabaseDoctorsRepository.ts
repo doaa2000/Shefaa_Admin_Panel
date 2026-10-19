@@ -5,6 +5,7 @@ import type { EntityId } from '@/shared/types';
 import { DoctorStatus } from '@/domain/enums';
 import { getSupabaseClient } from '@/infrastructure/supabase/client';
 import { toDoctor } from '@/infrastructure/mappers/doctor.mapper';
+import { clinicLocationText } from '@/infrastructure/mappers/location.mapper';
 import type { DoctorCredentials } from '@/domain/entities/Doctor';
 import { loadRefMaps } from './loadRefs';
 import type { DoctorRow } from '@/infrastructure/supabase/types';
@@ -35,20 +36,39 @@ export class SupabaseDoctorsRepository implements IDoctorsRepository {
   }
 
   async save(input: DoctorInput): Promise<Doctor> {
+    // The references come first: the clinic may have been made a moment ago by
+    // the same form, and its address is needed for `location` below.
+    const refs = await loadRefMaps(this.db);
+    const clinicId = input.clinicId ? Number(input.clinicId) : null;
+    const clinic = clinicId != null ? refs.clinics.get(clinicId) : undefined;
+    const city = clinic?.city_id != null ? refs.cities.get(clinic.city_id) : undefined;
+    const gov = city?.governorate_id != null ? refs.governorates.get(city.governorate_id) : undefined;
+
     // Single-language `name` in the app DB → use the English value.
-    const payload = {
+    const payload: Record<string, unknown> = {
       name: input.nameEn,
       specialty_id: input.specializationId ? Number(input.specializationId) : null,
-      clinic_id: input.clinicId ? Number(input.clinicId) : null,
+      clinic_id: clinicId,
       consultation_fee: input.fee,
       status: input.status,
       email: input.email || null,
     };
+    // What the patient app shows as the doctor's clinic; see
+    // clinicLocationText. Left alone when there is no clinic to describe, so
+    // a value typed in by hand is not wiped by an unrelated edit.
+    if (clinic) {
+      payload.location = clinicLocationText({
+        clinic: clinic.name,
+        address: clinic.address,
+        city: city?.name,
+        governorate: gov?.name,
+      });
+    }
     const query = input.id
       ? this.db.from(TABLE).update(payload).eq('id', Number(input.id))
       : this.db.from(TABLE).insert(payload);
-    const [refs, res] = await Promise.all([loadRefMaps(this.db), query.select(SELECT).single()]);
-    if (res.error) throw res.error;
+    const res = await query.select(SELECT).single();
+    if (res.error) throw await describeWriteError(res.error, this.db);
     return toDoctor(res.data as DoctorRow, refs);
   }
 

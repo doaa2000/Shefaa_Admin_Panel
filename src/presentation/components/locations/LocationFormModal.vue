@@ -7,11 +7,14 @@ import { LocationLevel } from '@/domain/enums';
 import { useI18n } from '@/presentation/composables/useI18n';
 
 const props = defineProps<{ level: LocationLevel; parentName?: string }>();
-const emit = defineEmits<{ close: []; submit: [nameEn: string, nameAr: string] }>();
+const emit = defineEmits<{ close: []; submit: [nameEn: string, nameAr: string, address: string] }>();
 
 const { t } = useI18n();
 const nameEn = ref('');
 const nameAr = ref('');
+// Only a clinic has one; it is what gets a patient from the city to the door.
+const address = ref('');
+const isClinic = computed(() => props.level === LocationLevel.Clinic);
 const error = ref('');
 
 const titles: Record<LocationLevel, string> = {
@@ -33,7 +36,7 @@ function submit(): void {
     error.value = t.value('required');
     return;
   }
-  emit('submit', nameEn.value, nameAr.value);
+  emit('submit', nameEn.value, nameAr.value, address.value);
 }
 </script>
 
@@ -47,6 +50,9 @@ function submit(): void {
         <input class="inp" dir="rtl" v-model="nameAr" />
       </FormField>
     </div>
+    <FormField v-if="isClinic" :label="t('clinicAddress')" :hint="t('clinicAddressHint')">
+      <textarea class="ta" v-model="address" />
+    </FormField>
     <template #footer>
       <BaseButton variant="ghost" @click="emit('close')">{{ t('cancel') }}</BaseButton>
       <BaseButton variant="primary" @click="submit">{{ t('add') }}</BaseButton>

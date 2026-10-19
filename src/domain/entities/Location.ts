@@ -5,6 +5,12 @@ export interface Clinic {
   id: EntityId;
   nameEn: string;
   nameAr: string;
+  /**
+   * Street, building, landmark: what gets a patient to the door once they are
+   * in the right city. Optional because clinics made before the panel asked
+   * for it have none.
+   */
+  address?: string;
 }
 
 /** A city containing clinics. */
@@ -28,4 +34,13 @@ export interface LocationChain {
   gov?: EntityId;
   city?: EntityId;
   clinic?: EntityId;
+}
+
+/** Creating a clinic, or changing one, from the panel. Without `id` it is new. */
+export interface ClinicInput {
+  id?: EntityId;
+  cityId: EntityId;
+  nameEn: string;
+  nameAr: string;
+  address: string;
 }

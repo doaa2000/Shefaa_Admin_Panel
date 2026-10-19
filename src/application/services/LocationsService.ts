@@ -1,5 +1,5 @@
 import type { IClinicsRepository } from '@/domain/repositories/IClinicsRepository';
-import type { Governorate, LocationChain } from '@/domain/entities/Location';
+import type { ClinicInput, Governorate, LocationChain } from '@/domain/entities/Location';
 import type { Locale, EntityId } from '@/shared/types';
 import { LocationLevel } from '@/domain/enums';
 
@@ -11,6 +11,9 @@ export interface FlatClinicOption {
   cityAr: string;
   govEn: string;
   govAr: string;
+  govId: EntityId;
+  cityId: EntityId;
+  address: string;
 }
 
 export class LocationsService {
@@ -28,6 +31,10 @@ export class LocationsService {
     return this.repo.deleteNode(level, ids);
   }
 
+  saveClinic(input: ClinicInput) {
+    return this.repo.saveClinic(input);
+  }
+
   /** Flattens the tree into a clinic option list used by the doctor form. */
   flattenClinics(tree: Governorate[]): FlatClinicOption[] {
     const out: FlatClinicOption[] = [];
@@ -42,6 +49,9 @@ export class LocationsService {
             cityAr: c.nameAr,
             govEn: g.nameEn,
             govAr: g.nameAr,
+            govId: g.id,
+            cityId: c.id,
+            address: cl.address ?? '',
           });
         }
       }

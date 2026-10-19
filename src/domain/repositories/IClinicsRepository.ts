@@ -1,4 +1,5 @@
-import type { Governorate, LocationChain } from '@/domain/entities/Location';
+import type { ClinicInput, Governorate, LocationChain } from '@/domain/entities/Location';
+import type { EntityId } from '@/shared/types';
 import type { LocationLevel } from '@/domain/enums';
 
 /**
@@ -14,4 +15,10 @@ export interface IClinicsRepository {
     parent: LocationChain,
   ): Promise<Governorate[]>;
   deleteNode(level: LocationLevel, ids: LocationChain): Promise<Governorate[]>;
+  /**
+   * Creates the clinic, or updates it when `input.id` is set, with its address.
+   * Returns the tree as it now stands and the clinic's id, which a new clinic
+   * only has once it is saved.
+   */
+  saveClinic(input: ClinicInput): Promise<{ tree: Governorate[]; clinicId: EntityId }>;
 }

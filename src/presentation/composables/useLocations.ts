@@ -66,5 +66,6 @@ export function useLocations() {
     load,
     addNode: store.addNode,
     deleteNode: store.deleteNode,
+    saveClinic: store.saveClinic,
   };
 }

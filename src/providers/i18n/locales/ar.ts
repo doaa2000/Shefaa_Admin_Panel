@@ -167,6 +167,13 @@ export const ar: Record<string, string> = {
   doctorUpdated: 'تم تحديث الطبيب',
   doctorDeleted: 'تم حذف الطبيب',
   assignedClinic: 'العيادة المخصصة',
+  clinicExisting: 'عيادة موجودة',
+  clinicNew: 'عيادة جديدة',
+  selectGov: 'اختر المحافظة',
+  clinicAddress: 'عنوان العيادة',
+  clinicAddressHint: 'الشارع والعمارة والدور وعلامة مميزة. يظهر للمرضى في صفحة الطبيب مع اسم العيادة والمدينة والمحافظة.',
+  noCitiesYet: 'لا توجد مدن في هذه المحافظة بعد. أضفها من صفحة المواقع.',
+  noClinicsYet: 'لا توجد عيادات بعد. أضف عيادة جديدة من هنا.',
 
   addSpecialization: 'إضافة تخصص',
   editSpecialization: 'تعديل التخصص',
