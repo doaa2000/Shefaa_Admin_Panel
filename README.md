@@ -114,7 +114,7 @@ VITE_SUPABASE_ANON_KEY=your-anon-public-key
 ### 3. Run
 
 ```bash
-npm run dev        # http://localhost:5173
+npm run dev        # http://localhost:5174
 ```
 
 **Demo login:** `admin@shefaa.eg` / `shefaa123`
