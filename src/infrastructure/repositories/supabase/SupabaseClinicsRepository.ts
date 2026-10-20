@@ -1,9 +1,11 @@
 import type { IClinicsRepository } from '@/domain/repositories/IClinicsRepository';
-import type { Governorate, LocationChain } from '@/domain/entities/Location';
+import type { ClinicInput, Governorate, LocationChain } from '@/domain/entities/Location';
 import { LocationLevel } from '@/domain/enums';
+import type { EntityId } from '@/shared/types';
 import { getSupabaseClient } from '@/infrastructure/supabase/client';
 import { buildLocationTree } from '@/infrastructure/mappers/location.mapper';
 import type { GovernorateRow, CityRow, ClinicRow } from '@/infrastructure/supabase/types';
+import { describeWriteError } from './writeGuards';
 
 export class SupabaseClinicsRepository implements IClinicsRepository {
   private db = getSupabaseClient();
@@ -59,5 +61,22 @@ export class SupabaseClinicsRepository implements IClinicsRepository {
     const { error } = await this.db.from(table).delete().eq('id', Number(id));
     if (error) throw error;
     return this.listTree();
+  }
+
+  async saveClinic(input: ClinicInput): Promise<{ tree: Governorate[]; clinicId: EntityId }> {
+    // Names are single-language in the app DB, as for the rest of the tree.
+    const payload = {
+      name: input.nameEn.trim() || input.nameAr.trim(),
+      address: input.address.trim() || null,
+      city_id: Number(input.cityId),
+    };
+    const query = input.id
+      ? this.db.from('Clinics').update(payload).eq('id', Number(input.id))
+      : this.db.from('Clinics').insert(payload);
+    const { data, error } = await query.select('id').single();
+    if (error) throw await describeWriteError(error, this.db);
+
+    const clinicId = String((data as { id: number }).id);
+    return { tree: await this.listTree(), clinicId };
   }
 }

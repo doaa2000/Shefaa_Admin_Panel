@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Governorate, LocationChain } from '@/domain/entities/Location';
+import type { ClinicInput, Governorate, LocationChain } from '@/domain/entities/Location';
+import type { EntityId } from '@/shared/types';
 import type { LocationLevel } from '@/domain/enums';
 import { container } from '@/providers/container';
 import { TOKENS } from '@/providers/tokens';
@@ -40,5 +41,12 @@ export const useLocationsStore = defineStore('locations', () => {
     tree.value = await service().deleteNode(level, ids);
   }
 
-  return { tree, loading, error, loaded, fetchTree, addNode, deleteNode };
+  /** Saves the clinic and returns its id, which a new one only now has. */
+  async function saveClinic(input: ClinicInput): Promise<EntityId> {
+    const saved = await service().saveClinic(input);
+    tree.value = saved.tree;
+    return saved.clinicId;
+  }
+
+  return { tree, loading, error, loaded, fetchTree, addNode, deleteNode, saveClinic };
 });

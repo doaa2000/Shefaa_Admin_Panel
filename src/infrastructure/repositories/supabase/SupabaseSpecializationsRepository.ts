@@ -7,7 +7,7 @@ import type { SpecialtyRow } from '@/infrastructure/supabase/types';
 import { assertDeleted, describeWriteError } from './writeGuards';
 
 const TABLE = 'specialties';
-const SELECT = 'id, name, icon, name_ar, description, color, base_fee';
+const SELECT = 'id, name, icon, name_ar';
 
 export class SupabaseSpecializationsRepository implements ISpecializationsRepository {
   private db = getSupabaseClient();
@@ -25,14 +25,13 @@ export class SupabaseSpecializationsRepository implements ISpecializationsReposi
   }
 
   async save(input: SpecializationInput): Promise<Specialization> {
-    // The app reads `name` + `icon`; the rest are admin-only enrichment columns.
+    // The app reads `name`, `name_ar` and `icon`. description, color and
+    // base_fee are nullable (base_fee defaults to 0), so they are left out: a
+    // new row takes the defaults and an edited one keeps what it had.
     const payload = {
       name: input.nameEn,
       name_ar: input.nameAr || input.nameEn,
-      description: input.descEn || input.descAr || null,
       icon: input.icon,
-      color: input.color,
-      base_fee: input.baseFee,
     };
     const query = input.id
       ? this.db.from(TABLE).update(payload).eq('id', Number(input.id))

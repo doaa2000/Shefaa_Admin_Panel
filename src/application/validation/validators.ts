@@ -23,18 +23,32 @@ export function validateDoctorForm(
   return e;
 }
 
+export interface NewClinicFormValues {
+  cityId: string;
+  name: string;
+}
+
+/** A clinic made from the doctor form needs a city to sit in and a name. */
+export function validateNewClinic(
+  v: NewClinicFormValues,
+  requiredMsg: string,
+): ValidationErrors<'clinicCity' | 'clinicName'> {
+  const e: ValidationErrors<'clinicCity' | 'clinicName'> = {};
+  if (!v.cityId) e.clinicCity = requiredMsg;
+  if (!v.name.trim()) e.clinicName = requiredMsg;
+  return e;
+}
+
 export interface SpecializationFormValues {
   nameEn: string;
-  baseFee: string | number;
 }
 
 export function validateSpecializationForm(
   v: SpecializationFormValues,
   requiredMsg: string,
-): ValidationErrors<'nameEn' | 'baseFee'> {
-  const e: ValidationErrors<'nameEn' | 'baseFee'> = {};
+): ValidationErrors<'nameEn'> {
+  const e: ValidationErrors<'nameEn'> = {};
   if (!v.nameEn.trim()) e.nameEn = requiredMsg;
-  if (!v.baseFee) e.baseFee = requiredMsg;
   return e;
 }
 

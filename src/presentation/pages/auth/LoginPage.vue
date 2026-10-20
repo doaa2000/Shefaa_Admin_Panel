@@ -6,14 +6,26 @@ import BaseButton from '@/presentation/components/ui/BaseButton.vue';
 import FormField from '@/presentation/components/ui/FormField.vue';
 import { useAuth } from '@/presentation/composables/useAuth';
 import { useI18n } from '@/presentation/composables/useI18n';
+import { isLocalBackend } from '@/shared/utils/backend';
 
 const { t } = useI18n();
 const { signIn, loading } = useAuth();
 const router = useRouter();
 const route = useRoute();
 
-const form = reactive({ email: 'admin@shefaa.eg', password: 'shefaa123' });
+// The demo account exists only in the local backend. Against Supabase it is a
+// wrong password waiting to happen, and a hint that misleads anyone who reads it.
+const demo = isLocalBackend();
+const form = reactive(demo ? { email: 'admin@shefaa.eg', password: 'shefaa123' } : { email: '', password: '' });
 const error = ref('');
+
+// Each refusal has its own fix: a typo, the wrong account, or a connection.
+const ERROR_KEYS: Record<string, string> = {
+  INVALID_CREDENTIALS: 'invalidCredentials',
+  NOT_ADMIN: 'notAdminAccount',
+  ADMIN_CHECK_FAILED: 'adminCheckFailed',
+  AUTH_UNREACHABLE: 'authUnreachable',
+};
 
 async function submit(): Promise<void> {
   error.value = '';
@@ -21,8 +33,9 @@ async function submit(): Promise<void> {
     await signIn({ email: form.email, password: form.password });
     const redirect = (route.query.redirect as string) || '/';
     router.replace(redirect);
-  } catch {
-    error.value = t.value('invalidCredentials');
+  } catch (e) {
+    const code = e instanceof Error ? e.message : '';
+    error.value = t.value(ERROR_KEYS[code] ?? 'invalidCredentials');
   }
 }
 </script>
@@ -46,6 +59,6 @@ async function submit(): Promise<void> {
       <AppIcon name="logout" :size="17" />{{ loading ? t('signingIn') : t('signIn') }}
     </BaseButton>
 
-    <p class="muted" style="text-align: center; font-size: 12px; margin: 16px 0 0">{{ t('demoHint') }}</p>
+    <p v-if="demo" class="muted" style="text-align: center; font-size: 12px; margin: 16px 0 0">{{ t('demoHint') }}</p>
   </form>
 </template>

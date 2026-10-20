@@ -40,6 +40,14 @@ const statusOptions = computed<SelectOption[]>(() => [
   { value: '', label: `${t.value('all')} — ${t.value('filterStatus')}` },
   ...['completed', 'confirmed', 'pending', 'cancelled'].map((s) => ({ value: s, label: t.value(s) })),
 ]);
+// Where it came from. The clinic's own bookings are on the same schedule and
+// in the same list, but the platform neither brought those patients nor takes
+// anything from them, and the admin needs to be able to tell them apart.
+const originOptions = computed<SelectOption[]>(() => [
+  { value: '', label: `${t.value('all')} — ${t.value('filterOrigin')}` },
+  { value: 'app', label: t.value('origin_app') },
+  { value: 'clinic', label: t.value('origin_clinic') },
+]);
 </script>
 
 <template>
@@ -49,6 +57,7 @@ const statusOptions = computed<SelectOption[]>(() => [
       <FilterSelect v-model="appts.filters.city" :options="cityOptions" />
       <FilterSelect v-model="appts.filters.doctor" :options="doctorOptions" />
       <FilterSelect v-model="appts.filters.status" :options="statusOptions" />
+      <FilterSelect v-model="appts.filters.origin" :options="originOptions" />
       <BaseButton v-if="appts.hasFilter.value" variant="ghost" small @click="appts.clear()">
         <AppIcon name="x" :size="15" />{{ t('clearFilters') }}
       </BaseButton>
@@ -83,6 +92,7 @@ const statusOptions = computed<SelectOption[]>(() => [
               <th>{{ t('dateTime') }}</th>
               <th style="text-align: end">{{ t('price') }}</th>
               <th>{{ t('status') }}</th>
+              <th>{{ t('origin') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -105,6 +115,11 @@ const statusOptions = computed<SelectOption[]>(() => [
               </td>
               <td class="num fw6" style="text-align: end">{{ formatMoney(a.price, locale) }}</td>
               <td><StatusBadge :status="a.status" /></td>
+              <td>
+                <span class="badge" :class="a.origin === 'clinic' ? 'purple' : 'info'">
+                  {{ t(a.origin === 'clinic' ? 'origin_clinic' : 'origin_app') }}
+                </span>
+              </td>
             </tr>
           </tbody>
         </table>

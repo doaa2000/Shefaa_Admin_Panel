@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { AnnounceResult, Campaign, CampaignInput } from '@/domain/entities/Campaign';
+import type {
+  AnnounceResult,
+  Campaign,
+  CampaignDelivery,
+  CampaignInput,
+} from '@/domain/entities/Campaign';
 import type { EntityId } from '@/shared/types';
 import { container } from '@/providers/container';
 import { TOKENS } from '@/providers/tokens';
@@ -72,6 +77,12 @@ export const useCampaignsStore = defineStore('campaigns', () => {
     }
   }
 
+  /** Read fresh every time, never cached: the sender keeps working after the
+   *  page has loaded, and the point of asking is to see it catch up. */
+  function delivery(id: EntityId): Promise<CampaignDelivery | null> {
+    return service().delivery(id);
+  }
+
   function uploadImage(file: File): Promise<string> {
     return service().uploadImage(file);
   }
@@ -93,6 +104,7 @@ export const useCampaignsStore = defineStore('campaigns', () => {
     save,
     remove,
     announce,
+    delivery,
     uploadImage,
   };
 });

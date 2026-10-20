@@ -2,9 +2,11 @@
 import { computed } from 'vue';
 import AppIcon from './AppIcon.vue';
 
+// Specialties no longer carry a color of their own (the app never showed one),
+// so every glyph is drawn in the panel's accent unless told otherwise.
 const props = withDefaults(
-  defineProps<{ icon: string; color: string; size?: number; box?: number }>(),
-  { size: 38, box: 38 },
+  defineProps<{ icon: string; color?: string; size?: number; box?: number }>(),
+  { color: '#4A93BC', size: 38, box: 38 },
 );
 
 const boxStyle = computed(() => ({

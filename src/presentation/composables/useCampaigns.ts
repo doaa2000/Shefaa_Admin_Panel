@@ -86,6 +86,7 @@ export function useCampaigns() {
     save: store.save,
     remove: store.remove,
     announce: store.announce,
+    delivery: store.delivery,
     uploadImage: store.uploadImage,
   };
 }

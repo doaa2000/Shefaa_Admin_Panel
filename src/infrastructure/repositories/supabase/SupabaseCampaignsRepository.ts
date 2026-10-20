@@ -1,10 +1,18 @@
 import type { ICampaignsRepository } from '@/domain/repositories/ICampaignsRepository';
-import type { AnnounceResult, Campaign, CampaignInput, CampaignStatus } from '@/domain/entities/Campaign';
+import type {
+  AnnounceResult,
+  Campaign,
+  CampaignDelivery,
+  CampaignInput,
+  CampaignStatus,
+  MissedPerson,
+} from '@/domain/entities/Campaign';
 import type { EntityId } from '@/shared/types';
 import { getSupabaseClient } from '@/infrastructure/supabase/client';
 import { toCampaign } from '@/infrastructure/mappers/campaign.mapper';
 import type { CampaignRow } from '@/infrastructure/supabase/types';
 import { assertDeleted, describeWriteError } from './writeGuards';
+import { isMissingFunction } from './schemaGaps';
 
 const TABLE = 'campaigns';
 // The same bucket as the banners: one convoy picture is a banner picture, and
@@ -77,6 +85,36 @@ export class SupabaseCampaignsRepository implements ICampaignsRepository {
       status: (row.status as CampaignStatus) ?? 'announced',
       round: Number(row.round ?? 0),
       addressed: Number(row.addressed ?? 0),
+      // Absent rather than zero before 0070: a zero here would tell the admin
+      // that nobody lives in the city, which was never measured.
+      audience: row.audience == null ? null : Number(row.audience),
+    };
+  }
+
+  async delivery(id: EntityId): Promise<CampaignDelivery | null> {
+    const { data, error } = await this.db.rpc('campaign_delivery', {
+      p_campaign: Number(id),
+    });
+    // Before 0070 there is nothing to count from, and saying so with an error
+    // under every announced convoy would bury the page.
+    if (error && isMissingFunction(error)) return null;
+    if (error) throw await describeWriteError(error, this.db);
+    const row = (data ?? {}) as Record<string, unknown>;
+    const missed = Array.isArray(row.missed) ? (row.missed as Record<string, unknown>[]) : [];
+    return {
+      told: Number(row.told ?? 0),
+      delivered: Number(row.delivered ?? 0),
+      noDevice: Number(row.noDevice ?? 0),
+      failed: Number(row.failed ?? 0),
+      pending: Number(row.pending ?? 0),
+      missed: missed.map(
+        (m): MissedPerson => ({
+          userId: String(m.userId ?? ''),
+          name: String(m.name ?? ''),
+          phone: String(m.phone ?? ''),
+          reason: m.reason === 'failed' ? 'failed' : 'no_device',
+        }),
+      ),
     };
   }
 

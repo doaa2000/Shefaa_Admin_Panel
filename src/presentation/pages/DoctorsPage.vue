@@ -171,11 +171,7 @@ async function onConfirmDelete(): Promise<void> {
               <td>
                 <span
                   v-if="doctors.specializationOf(d)"
-                  class="badge"
-                  :style="{
-                    color: doctors.specializationOf(d)!.color,
-                    background: doctors.specializationOf(d)!.color + '1A',
-                  }"
+                  class="badge info"
                 >
                   <AppIcon :name="doctors.specializationOf(d)!.icon" :size="13" />
                   {{ pick(doctors.specializationOf(d)!.nameEn, doctors.specializationOf(d)!.nameAr) }}

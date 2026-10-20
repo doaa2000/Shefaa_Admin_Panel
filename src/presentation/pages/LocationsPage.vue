@@ -35,11 +35,16 @@ interface ConfirmState {
 const adding = ref<AddState | null>(null);
 const confirmState = ref<ConfirmState | null>(null);
 
-async function onAdd(nameEn: string, nameAr: string): Promise<void> {
+async function onAdd(nameEn: string, nameAr: string, address: string): Promise<void> {
   if (!adding.value) return;
   const { level, chain } = adding.value;
   try {
-    await loc.addNode(level, nameEn, nameAr, chain);
+    // A clinic goes through saveClinic so that its address is kept with it.
+    if (level === LocationLevel.Clinic && chain.city) {
+      await loc.saveClinic({ cityId: chain.city, nameEn, nameAr, address });
+    } else {
+      await loc.addNode(level, nameEn, nameAr, chain);
+    }
     if (level === LocationLevel.City && chain.gov) loc.ensureOpen(chain.gov);
     if (level === LocationLevel.Clinic && chain.gov && chain.city) loc.ensureOpen(chain.gov, chain.city);
     adding.value = null;
@@ -152,6 +157,7 @@ async function onDelete(): Promise<void> {
                 </div>
                 <div style="flex: 1">
                   <div class="tree-name" style="font-size: 14px">{{ pick(cl.nameEn, cl.nameAr) }}</div>
+                  <div v-if="cl.address" class="tree-meta">{{ cl.address }}</div>
                   <div class="tree-meta">
                     {{ formatNumber(loc.doctorsInClinic(cl.id).length, locale) }} {{ t('doctors_l') }}
                   </div>

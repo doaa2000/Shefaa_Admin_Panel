@@ -36,6 +36,8 @@ export class SupabaseDoctorsRepository implements IDoctorsRepository {
 
   async save(input: DoctorInput): Promise<Doctor> {
     // Single-language `name` in the app DB → use the English value.
+    // `location` is not written: the app's doctors_public builds it from the
+    // clinic (Shefaa migration 0069), so a copy here could only drift.
     const payload = {
       name: input.nameEn,
       specialty_id: input.specializationId ? Number(input.specializationId) : null,
@@ -48,7 +50,7 @@ export class SupabaseDoctorsRepository implements IDoctorsRepository {
       ? this.db.from(TABLE).update(payload).eq('id', Number(input.id))
       : this.db.from(TABLE).insert(payload);
     const [refs, res] = await Promise.all([loadRefMaps(this.db), query.select(SELECT).single()]);
-    if (res.error) throw res.error;
+    if (res.error) throw await describeWriteError(res.error, this.db);
     return toDoctor(res.data as DoctorRow, refs);
   }
 

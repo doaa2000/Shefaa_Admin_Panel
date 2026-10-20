@@ -26,7 +26,13 @@ export function buildLocationTree(
         nameAr: c.name,
         clinics: clinics
           .filter((cl) => cl.city_id === c.id)
-          .map((cl) => ({ id: String(cl.id), nameEn: cl.name, nameAr: cl.name })),
+          .map((cl) => ({
+            id: String(cl.id),
+            nameEn: cl.name,
+            nameAr: cl.name,
+            address: cl.address ?? '',
+          })),
       })),
   }));
 }
+

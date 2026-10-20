@@ -20,6 +20,7 @@ export function useDashboard() {
     error,
     stats: computed(() => data.value?.stats ?? null),
     activeDoctors: computed(() => data.value?.activeDoctors ?? 0),
+    commission: computed(() => data.value?.commission ?? null),
     recent,
     activity,
     statusCounts,
